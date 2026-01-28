@@ -218,9 +218,10 @@ const themeConfigs: Record<string, ThemeConfig> = {
 interface LivePreviewProps {
   portfolio: Portfolio;
   projects: Project[];
+  onProjectClick?: (projectId: number) => void;
 }
 
-export function LivePreview({ portfolio, projects }: LivePreviewProps) {
+export function LivePreview({ portfolio, projects, onProjectClick }: LivePreviewProps) {
   const theme = themeConfigs[portfolio.colorTheme || "light"] || themeConfigs.light;
 
   const fontClass = portfolio.fontStyle === "serif" ? "font-serif" : 
@@ -419,10 +420,26 @@ export function LivePreview({ portfolio, projects }: LivePreviewProps) {
                     "group relative rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 border",
                     theme.cardBg,
                     theme.cardBorder,
-                    !theme.isDark && "shadow-lg shadow-black/5"
+                    !theme.isDark && "shadow-lg shadow-black/5",
+                    onProjectClick && "cursor-pointer"
                   )}
+                  onClick={onProjectClick ? () => onProjectClick(project.id) : undefined}
+                  role={onProjectClick ? "button" : undefined}
+                  tabIndex={onProjectClick ? 0 : undefined}
+                  onKeyDown={onProjectClick ? (e) => e.key === "Enter" && onProjectClick(project.id) : undefined}
                   data-testid={`card-project-${project.id}`}
                 >
+                  {/* Click to view details badge */}
+                  {onProjectClick && (
+                    <div className={cn(
+                      "absolute top-3 right-3 z-10 px-2 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity",
+                      theme.tagBg,
+                      theme.tagText
+                    )}>
+                      Click for details
+                    </div>
+                  )}
+                  
                   <div className="p-6 space-y-5">
                     {/* 1. Title */}
                     <div className="space-y-1">
@@ -434,6 +451,7 @@ export function LivePreview({ portfolio, projects }: LivePreviewProps) {
                           href={project.linkUrl} 
                           target="_blank" 
                           rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
                           className={cn(
                             "inline-flex items-center gap-1.5 text-sm font-medium transition-colors",
                             theme.accentText

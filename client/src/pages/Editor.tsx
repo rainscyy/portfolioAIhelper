@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useRoute } from "wouter";
+import { useRoute, useLocation } from "wouter";
 import { usePortfolio, useUpdatePortfolio } from "@/hooks/use-portfolios";
 import { useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/use-projects";
 import { Navbar } from "@/components/layout/Navbar";
@@ -16,6 +16,7 @@ import { type Project, type InsertProject } from "@shared/schema";
 
 export default function Editor() {
   const [, params] = useRoute("/editor/:id");
+  const [, navigate] = useLocation();
   const id = Number(params?.id);
   
   const { data: portfolio, isLoading } = usePortfolio(id);
@@ -28,6 +29,10 @@ export default function Editor() {
   const [activeTab, setActiveTab] = useState("projects");
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  
+  const handleProjectClick = (projectId: number) => {
+    navigate(`/portfolio/${id}/project/${projectId}`);
+  };
 
   if (isLoading || !portfolio) {
     return (
@@ -200,7 +205,11 @@ export default function Editor() {
            <div className="h-full w-full max-w-[1200px] mx-auto shadow-2xl rounded-xl overflow-hidden bg-white">
               {/* This scales the preview to fit if needed, but for now scroll is fine */}
               <ScrollArea className="h-full">
-                <LivePreview portfolio={portfolio} projects={portfolio.projects || []} />
+                <LivePreview 
+                  portfolio={portfolio} 
+                  projects={portfolio.projects || []} 
+                  onProjectClick={handleProjectClick}
+                />
               </ScrollArea>
            </div>
         </main>

@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/Home";
 import Review from "@/pages/Review";
 import Editor from "@/pages/Editor";
+import ProjectDetail from "@/pages/ProjectDetail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,9 +16,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/review" component={Review} />
       <Route path="/editor/:id" component={Editor} />
-      
-      {/* Route for standalone preview - reuses the editor logic but readonly */}
-      {/* In a real app, this would be a separate lightweight page component */}
+      <Route path="/portfolio/:portfolioId/project/:projectId" component={ProjectDetail} />
       
       <Route component={NotFound} />
     </Switch>

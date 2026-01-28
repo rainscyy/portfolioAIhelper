@@ -1,0 +1,72 @@
+Help me build a simple but complete AI-assisted portfolio website builder for students.
+
+The goal of this app is to allow students to generate a clean personal portfolio website that can be directly linked from their CV, GitHub, or LinkedIn.
+
+The app should allow users to upload or paste the following materials:
+- Resume (PDF)
+- Portfolio website link (optional)
+- GitHub profile link
+- LinkedIn profile link
+- Project files (images or PDFs)
+- Essay or writing samples (PDF)
+
+The app should automatically extract structured information from these inputs and help generate a multi-section personal website.
+
+Website structure:
+1. Landing Page
+   - Name
+   - Short tagline or personal statement
+   - Profile image (optional)
+
+2. About / Introduction
+   - Information parsed from the resume
+   - Education
+   - Skills
+   - Experience summary
+
+3. Selected Works
+   - A dedicated drag-and-drop area for projects
+   - Each project should support:
+     - Project title
+     - Description
+     - Role
+     - Year
+     - Images or PDF preview
+   - Users should be able to add Project 1 to Project N
+
+4. Contact Me
+   - Email
+   - LinkedIn
+   - GitHub
+   - Optional personal website link
+
+Design and customization:
+- Provide multiple layout templates
+- Allow users to choose:
+  - Font styles
+  - Color themes
+  - Light or dark mode
+- Keep the design minimal, portfolio-focused, and professional
+
+AI functionality:
+- Extract structured data from uploaded PDFs (resume, essays)
+- Summarize long text into concise portfolio-friendly descriptions
+- Suggest clean project descriptions if the user provides rough notes
+- Allow users to edit all AI-generated text before publishing
+
+Technical requirements:
+- Build as a web application in Replit
+- Use a clear multi-step flow:
+  Upload materials → Review extracted info → Customize layout → Preview → Export
+- Provide a live preview of the website
+- Allow export as a static website (HTML/CSS/JS) or shareable preview link
+
+Start with a minimal working MVP:
+- Basic upload
+- Text extraction
+- One template
+- One sample project layout
+
+Then iteratively improve structure, styling, and UX.
+
+Focus on clarity, usability, and student-friendly experience rather than advanced features.

@@ -8,38 +8,38 @@
   --font-display: 'Playfair Display', serif;
   --font-body: 'Inter', sans-serif;
 
-  /* Watercolor Gradient Theme - Mint/Pink/Blue */
-  --background: 160 30% 92%;
-  --foreground: 200 30% 20%;
+  /* Desert Sunset Theme - Sand/Mauve/Dusty Pink */
+  --background: 25 20% 88%;
+  --foreground: 20 25% 20%;
   
-  --primary: 180 50% 45%;
+  --primary: 340 25% 55%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 160 25% 90%;
-  --secondary-foreground: 200 30% 25%;
+  --secondary: 25 15% 85%;
+  --secondary-foreground: 20 20% 30%;
   
-  --muted: 160 20% 88%;
-  --muted-foreground: 200 15% 45%;
+  --muted: 25 12% 82%;
+  --muted-foreground: 20 10% 45%;
   
-  --accent: 355 65% 60%;
+  --accent: 280 20% 50%;
   --accent-foreground: 0 0% 100%;
   
-  --destructive: 0 84% 60%;
+  --destructive: 0 65% 50%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 160 25% 82%;
+  --border: 25 15% 78%;
   --input: 0 0% 100%;
-  --ring: 180 50% 45%;
+  --ring: 340 25% 55%;
   
   --card: 0 0% 100%;
-  --card-foreground: 200 30% 20%;
+  --card-foreground: 20 25% 20%;
 
-  --radius: 1rem;
+  --radius: 1.25rem;
   
-  /* Glassmorphism Variables */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.35);
-  --glass-shadow: 0 8px 32px rgba(100, 150, 140, 0.12);
+  /* Glassmorphism Variables - Warmer tones */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px rgba(120, 100, 90, 0.15);
 }
 
 .dark {
@@ -128,28 +128,27 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Gradient Background for Pages - Watercolor Style */
+/* Gradient Background for Pages - Desert Sunset Style */
 .gradient-bg {
-  background: linear-gradient(135deg, 
-    hsl(160, 35%, 88%) 0%,
-    hsl(170, 40%, 85%) 20%,
-    hsl(350, 35%, 90%) 45%,
-    hsl(180, 30%, 87%) 70%,
-    hsl(355, 40%, 88%) 100%
+  background: linear-gradient(160deg, 
+    hsl(30, 25%, 82%) 0%,
+    hsl(340, 20%, 85%) 35%,
+    hsl(280, 15%, 80%) 65%,
+    hsl(25, 20%, 78%) 100%
   );
   background-attachment: fixed;
   min-height: 100vh;
 }
 
-/* Decorative Blob Effects - Watercolor Splashes */
+/* Decorative Blob Effects - Soft Desert Glow */
 .blob-bg::before {
   content: '';
   position: fixed;
-  top: -15%;
-  right: -5%;
-  width: 55%;
-  height: 55%;
-  background: radial-gradient(ellipse, rgba(100, 200, 190, 0.25) 0%, transparent 65%);
+  top: -10%;
+  right: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(200, 160, 170, 0.25) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
 }
@@ -157,11 +156,11 @@
 .blob-bg::after {
   content: '';
   position: fixed;
-  bottom: -15%;
-  left: -5%;
-  width: 50%;
-  height: 55%;
-  background: radial-gradient(ellipse, rgba(230, 130, 140, 0.2) 0%, transparent 65%);
+  bottom: -10%;
+  left: -10%;
+  width: 45%;
+  height: 50%;
+  background: radial-gradient(ellipse, rgba(180, 150, 200, 0.2) 0%, transparent 60%);
   pointer-events: none;
   z-index: -1;
 }
@@ -172,15 +171,15 @@
 }
 
 .dark .glass-card {
-  background: rgba(30, 35, 40, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: rgba(35, 30, 35, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .dark .gradient-bg {
-  background: linear-gradient(135deg, 
-    hsl(180, 25%, 10%) 0%,
-    hsl(200, 20%, 12%) 50%,
-    hsl(340, 20%, 12%) 100%
+  background: linear-gradient(160deg, 
+    hsl(25, 15%, 12%) 0%,
+    hsl(340, 12%, 10%) 50%,
+    hsl(280, 10%, 8%) 100%
   );
 }

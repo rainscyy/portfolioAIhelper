@@ -141,7 +141,7 @@ export default function Editor() {
                     {(portfolio.projects || []).length === 0 && (
                       <div className="text-center py-8 border-2 border-dashed rounded-xl bg-muted/30">
                         <p className="text-muted-foreground text-sm">No projects yet</p>
-                        <Button variant="link" onClick={handleAddClick}>Add your first project</Button>
+                        <Button variant="ghost" onClick={handleAddClick}>Add your first project</Button>
                       </div>
                     )}
                   </div>

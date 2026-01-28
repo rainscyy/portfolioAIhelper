@@ -157,3 +157,14 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
   }
   return url;
 }
+
+// Re-export types from schema for hook usage
+export type { 
+  InsertPortfolio, 
+  UpdatePortfolioRequest, 
+  InsertProject, 
+  UpdateProjectRequest,
+  Portfolio,
+  Project,
+  PortfolioWithProjects
+} from './schema';

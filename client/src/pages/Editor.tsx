@@ -112,7 +112,7 @@ export default function Editor() {
                   </div>
 
                   <div className="space-y-3">
-                    {portfolio.projects.map((project) => (
+                    {(portfolio.projects || []).map((project) => (
                       <Card key={project.id} className="group hover:border-primary/50 transition-colors">
                         <CardContent className="p-4">
                           <div className="flex justify-between items-start">
@@ -121,10 +121,10 @@ export default function Editor() {
                               <p className="text-xs text-muted-foreground line-clamp-1">{project.description}</p>
                             </div>
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEditClick(project)}>
+                              <Button variant="ghost" size="icon" onClick={() => handleEditClick(project)}>
                                 <Edit className="w-4 h-4 text-primary" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDeleteProject(project.id)}>
+                              <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
                                 <Trash2 className="w-4 h-4 text-destructive" />
                               </Button>
                             </div>
@@ -133,7 +133,7 @@ export default function Editor() {
                       </Card>
                     ))}
                     
-                    {portfolio.projects.length === 0 && (
+                    {(portfolio.projects || []).length === 0 && (
                       <div className="text-center py-8 border-2 border-dashed rounded-xl bg-muted/30">
                         <p className="text-muted-foreground text-sm">No projects yet</p>
                         <Button variant="link" onClick={handleAddClick}>Add your first project</Button>
@@ -150,19 +150,33 @@ export default function Editor() {
                   
                   <div className="space-y-4">
                     <h3 className="font-semibold text-lg">Typography</h3>
+
                     <div className="grid grid-cols-3 gap-3">
-                       {['sans', 'serif', 'mono'].map((font) => (
-                         <Button
-                           key={font}
-                           variant={portfolio.fontStyle === font ? 'default' : 'outline'}
-                           className={font === 'serif' ? 'font-serif' : font === 'mono' ? 'font-mono' : 'font-sans'}
-                           onClick={() => updatePortfolio.mutate({ id, fontStyle: font })}
-                         >
-                           {font === 'sans' ? 'Modern' : font === 'serif' ? 'Classic' : 'Code'}
-                         </Button>
-                       ))}
+                      {['sans', 'serif', 'mono'].map((font) => (
+                        <Button
+                          key={font}
+                          variant={portfolio.fontStyle === font ? 'default' : 'outline'}
+                          className={
+                            font === 'serif'
+                              ? 'font-serif'
+                              : font === 'mono'
+                              ? 'font-mono'
+                              : 'font-sans'
+                          }
+                          onClick={() =>
+                            updatePortfolio.mutate({ id, fontStyle: font })
+                          }
+                        >
+                          {font === 'sans'
+                            ? 'Modern'
+                            : font === 'serif'
+                            ? 'Classic'
+                            : 'Code'}
+                        </Button>
+                      ))}
                     </div>
                   </div>
+
                 </TabsContent>
               </div>
             </ScrollArea>
@@ -186,7 +200,7 @@ export default function Editor() {
            <div className="h-full w-full max-w-[1200px] mx-auto shadow-2xl rounded-xl overflow-hidden bg-white">
               {/* This scales the preview to fit if needed, but for now scroll is fine */}
               <ScrollArea className="h-full">
-                <LivePreview portfolio={portfolio} projects={portfolio.projects} />
+                <LivePreview portfolio={portfolio} projects={portfolio.projects || []} />
               </ScrollArea>
            </div>
         </main>

@@ -106,6 +106,27 @@ const themes = [
     accent: "bg-gradient-to-r from-[#0ea5e9] to-[#0284c7]",
     text: "bg-[#cbd5e1]"
   },
+  { 
+    id: "frosted", 
+    name: "磨砂玻璃 Frosted Glass", 
+    preview: "bg-gradient-to-br from-[#b8a89a] to-[#c4b5a5]",
+    accent: "bg-gradient-to-r from-[#f59e0b] to-[#ea580c]",
+    text: "bg-white/40"
+  },
+  { 
+    id: "sandblue", 
+    name: "沙画蓝 Sand Blue", 
+    preview: "bg-gradient-to-br from-[#e8eef5] to-[#1e40af]",
+    accent: "bg-gradient-to-r from-[#2563eb] to-[#1d4ed8]",
+    text: "bg-white/50"
+  },
+  { 
+    id: "apple", 
+    name: "Apple 极简风", 
+    preview: "bg-[#f5f5f7]",
+    accent: "bg-[#0071e3]",
+    text: "bg-[#d2d2d7]"
+  },
 ];
 
 export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {

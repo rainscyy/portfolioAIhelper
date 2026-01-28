@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LivePreview } from "@/components/portfolio/LivePreview";
 import { ThemeSelector } from "@/components/portfolio/ThemeSelector";
+import { ColorPicker } from "@/components/portfolio/ColorPicker";
 import { ProjectForm } from "@/components/portfolio/ProjectForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Plus, Edit, Trash2, LayoutTemplate, Palette, Share2, ExternalLink } from "lucide-react";
@@ -151,6 +152,13 @@ export default function Editor() {
                   <ThemeSelector 
                     currentTheme={portfolio.colorTheme || "light"} 
                     onThemeChange={handleUpdateTheme} 
+                  />
+                  
+                  <ColorPicker
+                    primaryColor={portfolio.customPrimaryColor || null}
+                    accentColor={portfolio.customAccentColor || null}
+                    onPrimaryChange={(color) => updatePortfolio.mutate({ id, customPrimaryColor: color })}
+                    onAccentChange={(color) => updatePortfolio.mutate({ id, customAccentColor: color })}
                   />
                   
                   <div className="space-y-4">

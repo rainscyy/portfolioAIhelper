@@ -28,6 +28,8 @@ export const portfolios = pgTable("portfolios", {
   colorTheme: text("color_theme").default("light"), // light, dark, blue, etc.
   fontStyle: text("font_style").default("sans"), // sans, serif, mono
   profileImageUrl: text("profile_image_url"),
+  customPrimaryColor: text("custom_primary_color"), // Custom primary color hex
+  customAccentColor: text("custom_accent_color"), // Custom accent color hex
 });
 
 export const projects = pgTable("projects", {

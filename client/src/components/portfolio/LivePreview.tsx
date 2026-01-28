@@ -289,6 +289,63 @@ const themeConfigs: Record<string, ThemeConfig> = {
     quoteMark: "text-[#0ea5e9]",
     isDark: false,
   },
+  frosted: {
+    background: "bg-gradient-to-br from-[#b8a89a] via-[#a89888] to-[#c4b5a5]",
+    text: "text-[#2a2420]",
+    headerBg: "",
+    accent: "from-[#f59e0b] to-[#ea580c]",
+    accentBg: "bg-[#f59e0b]/15",
+    accentText: "text-[#ea580c]",
+    cardBg: "bg-white/40",
+    cardBorder: "border-white/30",
+    sectionBg: "bg-white/20",
+    tagBg: "bg-[#f59e0b]/20",
+    tagText: "text-[#c2410c]",
+    mutedText: "text-[#57534e]",
+    borderColor: "border-white/25",
+    socialBg: "bg-white/30",
+    socialHover: "hover:bg-white/40",
+    quoteMark: "text-[#f59e0b]",
+    isDark: false,
+  },
+  sandblue: {
+    background: "bg-gradient-to-br from-[#e8eef5] via-[#d0dcea] to-[#1e40af]",
+    text: "text-[#1e3a5f]",
+    headerBg: "",
+    accent: "from-[#2563eb] to-[#1d4ed8]",
+    accentBg: "bg-[#2563eb]/15",
+    accentText: "text-[#1d4ed8]",
+    cardBg: "bg-white/50",
+    cardBorder: "border-[#2563eb]/20",
+    sectionBg: "bg-white/30",
+    tagBg: "bg-[#2563eb]/15",
+    tagText: "text-[#1e40af]",
+    mutedText: "text-[#475569]",
+    borderColor: "border-[#2563eb]/30",
+    socialBg: "bg-[#2563eb]/10",
+    socialHover: "hover:bg-[#2563eb]/20",
+    quoteMark: "text-[#2563eb]",
+    isDark: false,
+  },
+  apple: {
+    background: "bg-[#f5f5f7]",
+    text: "text-[#1d1d1f]",
+    headerBg: "",
+    accent: "from-[#0071e3] to-[#0077ed]",
+    accentBg: "bg-[#0071e3]/8",
+    accentText: "text-[#0071e3]",
+    cardBg: "bg-white",
+    cardBorder: "border-[#d2d2d7]",
+    sectionBg: "bg-white",
+    tagBg: "bg-[#f5f5f7]",
+    tagText: "text-[#1d1d1f]",
+    mutedText: "text-[#86868b]",
+    borderColor: "border-[#d2d2d7]",
+    socialBg: "bg-[#f5f5f7]",
+    socialHover: "hover:bg-[#e8e8ed]",
+    quoteMark: "text-[#0071e3]",
+    isDark: false,
+  },
 };
 
 interface LivePreviewProps {
@@ -303,13 +360,23 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
   const fontClass = portfolio.fontStyle === "serif" ? "font-serif" : 
                     portfolio.fontStyle === "mono" ? "font-mono" : "";
 
+  const customStyles = {
+    '--custom-primary': portfolio.customPrimaryColor || undefined,
+    '--custom-accent': portfolio.customAccentColor || undefined,
+  } as React.CSSProperties;
+
+  const hasCustomColors = portfolio.customPrimaryColor || portfolio.customAccentColor;
+
   return (
-    <div className={cn(
-      "w-full h-full min-h-[900px] overflow-y-auto transition-all duration-500",
-      theme.background,
-      theme.text,
-      fontClass
-    )}>
+    <div 
+      className={cn(
+        "w-full h-full min-h-[900px] overflow-y-auto transition-all duration-500",
+        theme.background,
+        theme.text,
+        fontClass
+      )}
+      style={customStyles}
+    >
       {/* Hero Section */}
       <header className={cn(
         "relative py-24 px-8 overflow-hidden",

@@ -240,7 +240,7 @@ export default function ProjectDetail() {
   const mediaGallery: MediaItem[] = project.mediaGallery || [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen gradient-bg blob-bg">
       {/* Minimal Header */}
       <header className="fixed top-0 left-0 right-0 z-50 p-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">

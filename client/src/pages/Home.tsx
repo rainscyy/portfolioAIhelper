@@ -121,7 +121,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-body">
+    <div className="min-h-screen gradient-bg blob-bg font-body">
       <Navbar />
       
       <main className="max-w-7xl mx-auto px-4 pt-16 pb-24 sm:px-6 lg:px-8">
@@ -171,7 +171,7 @@ export default function Home() {
             {/* Decorative background blob */}
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent opacity-30 blur-2xl rounded-[2rem] -z-10" />
             
-            <Card className="border-border shadow-2xl rounded-[2rem] overflow-hidden backdrop-blur-sm bg-card/90">
+            <Card className="glass-card rounded-[2rem] overflow-visible">
               <CardContent className="p-8 space-y-8">
                 <div className="text-center space-y-2">
                   <h3 className="text-2xl font-bold font-display">Get Started</h3>

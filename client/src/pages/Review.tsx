@@ -94,7 +94,7 @@ export default function Review() {
   if (!extractedData) return null;
 
   return (
-    <div className="min-h-screen bg-secondary/30">
+    <div className="min-h-screen gradient-bg blob-bg">
       <Navbar />
       
       <main className="max-w-3xl mx-auto px-4 py-12">

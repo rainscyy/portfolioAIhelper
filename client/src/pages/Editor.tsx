@@ -88,12 +88,12 @@ export default function Editor() {
   };
 
   return (
-    <div className="min-h-screen bg-secondary/20 flex flex-col h-screen overflow-hidden">
+    <div className="min-h-screen gradient-bg blob-bg flex flex-col h-screen overflow-hidden">
       <Navbar />
       
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar / Controls */}
-        <aside className="w-full md:w-[400px] bg-background border-r flex flex-col z-10 shadow-xl">
+        <aside className="w-full md:w-[400px] glass-card border-r flex flex-col z-10">
           <div className="p-4 border-b">
             <h2 className="font-display font-bold text-xl">Portfolio Editor</h2>
           </div>

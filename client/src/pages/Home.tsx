@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, FileText, Github, Linkedin, ArrowRight, Sparkles } from "lucide-react";
+import { Upload, FileText, Github, Linkedin, ArrowRight, Sparkles, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 // Context to pass data to next page - in a real app use Context/Redux
 // For now we'll pass via route state if Wouter supported it, but we'll use localStorage for this simple flow
@@ -23,6 +24,55 @@ export default function Home() {
   const [github, setGithub] = useState("");
   const [linkedin, setLinkedin] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCreatingDemo, setIsCreatingDemo] = useState(false);
+
+  const handlePreviewDemo = async () => {
+    setIsCreatingDemo(true);
+    try {
+      const res = await apiRequest('POST', '/api/portfolios', {
+        name: "Alex Chen",
+        bio: "Full-stack developer with 3+ years of experience building web applications. Passionate about creating intuitive user experiences and scalable backend systems. Currently exploring AI/ML integration in modern web apps.",
+        skills: ["React", "TypeScript", "Node.js", "Python", "PostgreSQL", "AWS", "Docker", "GraphQL"],
+        githubUrl: "https://github.com/alexchen",
+        linkedinUrl: "https://linkedin.com/in/alexchen",
+        email: "alex@example.com",
+        colorTheme: "dreamy",
+        fontStyle: "sans",
+      });
+      const demoPortfolio = await res.json();
+
+      const portfolioId = demoPortfolio.id;
+
+      await Promise.all([
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "E-Commerce Platform",
+          description: "A full-featured online marketplace with real-time inventory, secure payments, and AI-powered recommendations. Built with React, Node.js, and PostgreSQL.",
+          technologies: ["React", "Node.js", "PostgreSQL", "Stripe", "Redis"],
+          demoUrl: "https://demo.example.com",
+          githubUrl: "https://github.com/alexchen/ecommerce",
+        }),
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "AI Chat Assistant",
+          description: "An intelligent conversational agent powered by GPT-4, featuring context-aware responses, multi-language support, and seamless integration with enterprise tools.",
+          technologies: ["Python", "OpenAI", "FastAPI", "React", "WebSocket"],
+          demoUrl: "https://chat.example.com",
+        }),
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "Task Management App",
+          description: "A collaborative project management tool with Kanban boards, real-time updates, and team analytics. Designed for remote teams.",
+          technologies: ["TypeScript", "Next.js", "Prisma", "Tailwind CSS"],
+          githubUrl: "https://github.com/alexchen/taskflow",
+        }),
+      ]);
+
+      toast({ title: "Demo Ready!", description: "Opening portfolio editor with sample data." });
+      setLocation(`/editor/${portfolioId}`);
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to create demo. Please try again.", variant: "destructive" });
+    } finally {
+      setIsCreatingDemo(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -177,12 +227,36 @@ export default function Home() {
                   size="lg" 
                   className="w-full h-12 text-base font-semibold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
                   onClick={handleStart}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isCreatingDemo}
+                  data-testid="button-generate"
                 >
                   {isProcessing ? (
                     <>Processing...</>
                   ) : (
                     <>Generate Portfolio <ArrowRight className="ml-2 w-5 h-5" /></>
+                  )}
+                </Button>
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                  <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground">Or</span></div>
+                </div>
+
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  className="w-full h-12 text-base font-semibold"
+                  onClick={handlePreviewDemo}
+                  disabled={isProcessing || isCreatingDemo}
+                  data-testid="button-preview-demo"
+                >
+                  {isCreatingDemo ? (
+                    <>Creating Demo...</>
+                  ) : (
+                    <>
+                      <Eye className="mr-2 w-5 h-5" />
+                      Preview Demo Portfolio
+                    </>
                   )}
                 </Button>
               </CardContent>

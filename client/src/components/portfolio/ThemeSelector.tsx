@@ -78,6 +78,34 @@ const themes = [
     accent: "bg-gradient-to-r from-green-400 to-cyan-400",
     text: "bg-green-200"
   },
+  { 
+    id: "pixel", 
+    name: "像素风 Pixel Art", 
+    preview: "bg-[#1a1a2e]",
+    accent: "bg-gradient-to-r from-[#e94560] to-[#ff6b6b]",
+    text: "bg-[#0f3460]"
+  },
+  { 
+    id: "watercolor", 
+    name: "水彩风 Watercolor", 
+    preview: "bg-gradient-to-br from-[#f0e6ef] via-[#e8f4f0] to-[#fdf2e9]",
+    accent: "bg-gradient-to-r from-[#7fc8c5] to-[#f0a5a5]",
+    text: "bg-[#d4e5e2]"
+  },
+  { 
+    id: "dreamy", 
+    name: "梦幻风 Dreamy", 
+    preview: "bg-gradient-to-br from-[#e8d5f2] via-[#f5e6f8] to-[#fce4ec]",
+    accent: "bg-gradient-to-r from-[#b794f6] to-[#f8a5c2]",
+    text: "bg-[#dbb4f3]"
+  },
+  { 
+    id: "business", 
+    name: "商业风 Business", 
+    preview: "bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]",
+    accent: "bg-gradient-to-r from-[#0ea5e9] to-[#0284c7]",
+    text: "bg-[#cbd5e1]"
+  },
 ];
 
 export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {

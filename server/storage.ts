@@ -20,7 +20,7 @@ export interface IStorage {
   updatePortfolio(id: number, updates: UpdatePortfolioRequest): Promise<Portfolio>;
   
   // Projects
-  createProject(project: InsertProject): Promise<Project>;
+  createProject(portfolioId: number, project: InsertProject): Promise<Project>;
   updateProject(id: number, updates: UpdateProjectRequest): Promise<Project>;
   deleteProject(id: number): Promise<void>;
 }
@@ -66,8 +66,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Projects
-  async createProject(insertProject: InsertProject): Promise<Project> {
-    const [project] = await db.insert(projects).values(insertProject).returning();
+  async createProject(portfolioId: number, insertProject: InsertProject): Promise<Project> {
+    const [project] = await db.insert(projects).values({ ...insertProject, portfolioId }).returning();
     return project;
   }
 

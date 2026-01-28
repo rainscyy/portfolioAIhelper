@@ -75,11 +75,10 @@ export async function registerRoutes(
   // --- Projects ---
   app.post(api.projects.create.path, async (req, res) => {
      try {
-      // Ensure portfolioId from params matches body if present, or just use params
       const portfolioId = Number(req.params.portfolioId);
-      const input = api.projects.create.input.parse({ ...req.body, portfolioId });
+      const input = api.projects.create.input.parse(req.body);
       
-      const project = await storage.createProject(input);
+      const project = await storage.createProject(portfolioId, input);
       res.status(201).json(project);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -230,8 +229,7 @@ export async function registerRoutes(
       });
 
       // Create sample project
-      await storage.createProject({
-          portfolioId: portfolio.id,
+      await storage.createProject(portfolio.id, {
           title: "Portfolio Builder",
           description: "An AI-powered app to help students build portfolios.",
           role: "Lead Developer",

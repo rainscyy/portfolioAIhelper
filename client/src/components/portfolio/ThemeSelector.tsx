@@ -8,29 +8,119 @@ interface ThemeSelectorProps {
 }
 
 const themes = [
-  { id: "light", name: "Clean Light", bg: "bg-white", border: "border-gray-200" },
-  { id: "dark", name: "Modern Dark", bg: "bg-gray-950", border: "border-gray-800" },
-  { id: "blue", name: "Corporate Blue", bg: "bg-blue-50", border: "border-blue-200" },
-  { id: "minimal", name: "Minimalist", bg: "bg-stone-50", border: "border-stone-200" },
+  { 
+    id: "light", 
+    name: "Clean Light", 
+    preview: "bg-white",
+    accent: "bg-indigo-500",
+    text: "bg-gray-300"
+  },
+  { 
+    id: "dark", 
+    name: "Modern Dark", 
+    preview: "bg-gray-950",
+    accent: "bg-violet-500",
+    text: "bg-gray-700"
+  },
+  { 
+    id: "blue", 
+    name: "Corporate Blue", 
+    preview: "bg-slate-50",
+    accent: "bg-blue-500",
+    text: "bg-slate-300"
+  },
+  { 
+    id: "minimal", 
+    name: "Minimalist", 
+    preview: "bg-stone-50",
+    accent: "bg-stone-600",
+    text: "bg-stone-300"
+  },
+  { 
+    id: "sunset", 
+    name: "Warm Sunset", 
+    preview: "bg-gradient-to-br from-orange-50 to-rose-50",
+    accent: "bg-gradient-to-r from-orange-500 to-rose-500",
+    text: "bg-orange-200"
+  },
+  { 
+    id: "forest", 
+    name: "Forest Green", 
+    preview: "bg-gradient-to-br from-emerald-50 to-teal-50",
+    accent: "bg-gradient-to-r from-emerald-500 to-teal-500",
+    text: "bg-emerald-200"
+  },
+  { 
+    id: "ocean", 
+    name: "Ocean Deep", 
+    preview: "bg-slate-900",
+    accent: "bg-gradient-to-r from-cyan-500 to-blue-500",
+    text: "bg-slate-700"
+  },
+  { 
+    id: "lavender", 
+    name: "Soft Lavender", 
+    preview: "bg-gradient-to-br from-purple-50 to-pink-50",
+    accent: "bg-gradient-to-r from-purple-500 to-pink-500",
+    text: "bg-purple-200"
+  },
+  { 
+    id: "noir", 
+    name: "Elegant Noir", 
+    preview: "bg-neutral-950",
+    accent: "bg-amber-500",
+    text: "bg-neutral-700"
+  },
+  { 
+    id: "mint", 
+    name: "Fresh Mint", 
+    preview: "bg-gradient-to-br from-green-50 to-cyan-50",
+    accent: "bg-gradient-to-r from-green-400 to-cyan-400",
+    text: "bg-green-200"
+  },
 ];
 
 export function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-lg">Color Theme</h3>
-      <RadioGroup value={currentTheme} onValueChange={onThemeChange} className="grid grid-cols-2 gap-4">
+      <RadioGroup value={currentTheme} onValueChange={onThemeChange} className="grid grid-cols-2 gap-3">
         {themes.map((theme) => (
           <div key={theme.id}>
             <RadioGroupItem value={theme.id} id={theme.id} className="peer sr-only" />
             <Label
               htmlFor={theme.id}
               className={cn(
-                "flex flex-col items-center justify-between rounded-xl border-2 p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer transition-all",
+                "flex flex-col items-center justify-between rounded-xl border-2 p-3 hover-elevate cursor-pointer transition-all",
                 currentTheme === theme.id ? "border-primary bg-primary/5" : "border-muted"
               )}
+              data-testid={`theme-${theme.id}`}
             >
-              <div className={cn("w-full h-24 rounded-lg mb-3 shadow-sm", theme.bg, theme.border, "border")} />
-              <span className="font-medium">{theme.name}</span>
+              {/* Theme Preview Card */}
+              <div className={cn(
+                "w-full h-20 rounded-lg mb-2 shadow-sm overflow-hidden border border-black/5",
+                theme.preview
+              )}>
+                {/* Mini preview layout */}
+                <div className="p-2 h-full flex flex-col justify-between">
+                  {/* Header area */}
+                  <div className="flex items-center gap-1.5">
+                    <div className={cn("w-4 h-4 rounded-full", theme.accent)} />
+                    <div className={cn("h-1.5 w-10 rounded-full", theme.text)} />
+                  </div>
+                  {/* Content area */}
+                  <div className="space-y-1">
+                    <div className={cn("h-1 w-full rounded-full opacity-60", theme.text)} />
+                    <div className={cn("h-1 w-3/4 rounded-full opacity-40", theme.text)} />
+                  </div>
+                  {/* Cards area */}
+                  <div className="flex gap-1">
+                    <div className={cn("flex-1 h-4 rounded", theme.accent, "opacity-20")} />
+                    <div className={cn("flex-1 h-4 rounded", theme.accent, "opacity-20")} />
+                  </div>
+                </div>
+              </div>
+              <span className="text-sm font-medium">{theme.name}</span>
             </Label>
           </div>
         ))}

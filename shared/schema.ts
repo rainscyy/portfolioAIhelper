@@ -47,8 +47,17 @@ export const projects = pgTable("projects", {
   highlights: text("highlights").array(), // Key achievements/features
   challenges: text("challenges"), // Challenges faced
   outcome: text("outcome"), // Results/impact
+  mediaGallery: jsonb("media_gallery").$type<MediaItem[]>(), // Gallery of images and videos
   order: integer("order").default(0),
 });
+
+// Media gallery item types
+export type MediaItem = {
+  id: string;
+  type: 'image' | 'video' | 'embed';
+  url: string;
+  caption?: string;
+};
 
 // === RELATIONS ===
 

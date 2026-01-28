@@ -35,11 +35,18 @@ export const projects = pgTable("projects", {
   portfolioId: integer("portfolio_id").notNull().references(() => portfolios.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
   description: text("description"),
+  detailedDescription: text("detailed_description"), // Full description for detail page
   role: text("role"),
   year: text("year"), // text because it might be a range "2020-2021"
-  imageUrl: text("image_url"), // URL to project image
-  linkUrl: text("link_url"), // URL to project demo/repo
+  imageUrl: text("image_url"), // Cover image URL
+  linkUrl: text("link_url"), // Main project URL
+  githubUrl: text("github_url"), // GitHub repository
+  demoUrl: text("demo_url"), // Live demo link
+  videoUrl: text("video_url"), // Video demo link
   technologies: text("technologies").array(), // Array of tech strings
+  highlights: text("highlights").array(), // Key achievements/features
+  challenges: text("challenges"), // Challenges faced
+  outcome: text("outcome"), // Results/impact
   order: integer("order").default(0),
 });
 

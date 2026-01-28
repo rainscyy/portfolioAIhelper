@@ -235,100 +235,132 @@ export function LivePreview({ portfolio, projects }: LivePreviewProps) {
                   )}
                   data-testid={`card-project-${project.id}`}
                 >
-                  {/* Project Image or Gradient Placeholder */}
+                  <div className="p-6 space-y-5">
+                    {/* 1. Title - 标题 */}
+                    <div className="space-y-1">
+                      <h3 className={cn(
+                        "text-2xl font-bold tracking-tight group-hover:text-primary transition-colors",
+                        isDark ? "text-white" : "text-gray-900"
+                      )} data-testid={`text-project-title-${project.id}`}>
+                        {project.title}
+                      </h3>
+                      {project.linkUrl && (
+                        <a 
+                          href={project.linkUrl} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className={cn(
+                            "inline-flex items-center gap-1.5 text-sm font-medium transition-colors",
+                            isDark ? "text-violet-400 hover:text-violet-300" :
+                            isBlue ? "text-blue-600 hover:text-blue-700" :
+                            isMinimal ? "text-stone-600 hover:text-stone-800" :
+                            "text-indigo-600 hover:text-indigo-700"
+                          )}
+                          data-testid={`link-project-${project.id}`}
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          View Project
+                        </a>
+                      )}
+                    </div>
+
+                    {/* 2. Information - 信息 (Role, Year, Technologies) */}
+                    <div className={cn(
+                      "flex flex-wrap items-center gap-3 py-3 border-y",
+                      isDark ? "border-gray-800" : "border-gray-100"
+                    )}>
+                      {project.role && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          isDark ? "bg-violet-500/15 text-violet-300" :
+                          isBlue ? "bg-blue-100 text-blue-700" :
+                          isMinimal ? "bg-stone-200 text-stone-700" :
+                          "bg-indigo-100 text-indigo-700"
+                        )}>
+                          <Briefcase className="w-3.5 h-3.5" />
+                          {project.role}
+                        </span>
+                      )}
+                      {project.year && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+                        )}>
+                          <Calendar className="w-3.5 h-3.5" />
+                          {project.year}
+                        </span>
+                      )}
+                      {project.technologies && project.technologies.length > 0 && (
+                        <>
+                          {project.technologies.slice(0, 3).map((tech) => (
+                            <span 
+                              key={tech} 
+                              className={cn(
+                                "text-xs px-2.5 py-1 rounded-full font-medium",
+                                isDark ? "bg-gray-800 text-gray-400" : "bg-gray-100 text-gray-600"
+                              )}
+                            >
+                              {tech}
+                            </span>
+                          ))}
+                          {project.technologies.length > 3 && (
+                            <span className={cn(
+                              "text-xs px-2 py-1 rounded-full",
+                              isDark ? "text-gray-500" : "text-gray-400"
+                            )}>
+                              +{project.technologies.length - 3} more
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </div>
+                    
+                    {/* 3. Description - 阐述 */}
+                    <div className="space-y-2">
+                      <p className={cn(
+                        "text-sm font-semibold uppercase tracking-wider",
+                        isDark ? "text-gray-500" : "text-gray-400"
+                      )}>
+                        Description
+                      </p>
+                      <p className={cn(
+                        "text-base leading-relaxed",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )} data-testid={`text-project-desc-${project.id}`}>
+                        {project.description || "No description provided."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 4. Cover Image - 封面图片 */}
                   {project.imageUrl ? (
-                    <div className="h-52 overflow-hidden">
+                    <div className="relative h-56 overflow-hidden border-t border-gray-100 dark:border-gray-800">
                       <img 
                         src={project.imageUrl} 
                         alt={project.title} 
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
+                      <div className={cn(
+                        "absolute inset-0 bg-gradient-to-t opacity-30",
+                        isDark ? "from-gray-900 to-transparent" : "from-black/20 to-transparent"
+                      )} />
                     </div>
                   ) : (
                     <div className={cn(
-                      "h-52 flex items-center justify-center",
-                      `bg-gradient-to-br ${accentColor} opacity-80`
+                      "h-40 flex items-center justify-center border-t",
+                      isDark ? "border-gray-800 bg-gradient-to-br from-gray-800/50 to-gray-900" :
+                      `bg-gradient-to-br ${accentColor} opacity-90`,
+                      isDark ? "" : "border-gray-100"
                     )}>
-                      <div className="text-center text-white">
-                        <Code2 className="w-12 h-12 mx-auto mb-2 opacity-60" />
-                        <span className="text-sm font-medium opacity-80">Project {index + 1}</span>
+                      <div className={cn(
+                        "text-center",
+                        isDark ? "text-gray-500" : "text-white"
+                      )}>
+                        <Code2 className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                        <span className="text-sm font-medium opacity-70">Project {index + 1}</span>
                       </div>
                     </div>
                   )}
-                  
-                  <div className="p-6 space-y-4">
-                    {/* Title & Meta */}
-                    <div>
-                      <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors" data-testid={`text-project-title-${project.id}`}>
-                        {project.title}
-                      </h3>
-                      <div className={cn(
-                        "flex items-center gap-4 text-sm",
-                        isDark ? "text-gray-400" : "text-gray-500"
-                      )}>
-                        {project.role && (
-                          <span className="flex items-center gap-1">
-                            <Briefcase className="w-3.5 h-3.5" />
-                            {project.role}
-                          </span>
-                        )}
-                        {project.year && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {project.year}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Description */}
-                    <p className={cn(
-                      "text-sm leading-relaxed line-clamp-3",
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    )} data-testid={`text-project-desc-${project.id}`}>
-                      {project.description}
-                    </p>
-                    
-                    {/* Technologies */}
-                    {project.technologies && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-2 pt-2">
-                        {project.technologies.map((tech) => (
-                          <span 
-                            key={tech} 
-                            className={cn(
-                              "text-xs px-3 py-1 rounded-full font-medium transition-colors",
-                              isDark ? "bg-gray-800 text-gray-300 hover:bg-gray-700" : 
-                              isBlue ? "bg-blue-100 text-blue-700" :
-                              isMinimal ? "bg-stone-200 text-stone-700" :
-                              "bg-indigo-100 text-indigo-700"
-                            )}
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {/* Link */}
-                    {project.linkUrl && (
-                      <a 
-                        href={project.linkUrl} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className={cn(
-                          "inline-flex items-center gap-2 text-sm font-semibold pt-2 transition-colors",
-                          isDark ? "text-violet-400 hover:text-violet-300" :
-                          isBlue ? "text-blue-600 hover:text-blue-700" :
-                          isMinimal ? "text-stone-700 hover:text-stone-900" :
-                          "text-indigo-600 hover:text-indigo-700"
-                        )}
-                        data-testid={`link-project-${project.id}`}
-                      >
-                        View Project
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
                 </div>
               ))}
             </div>

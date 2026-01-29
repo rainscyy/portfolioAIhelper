@@ -1,17 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProjectSchema, type InsertProject } from "@shared/schema";
+import { insertProjectSchema, type InsertProject, PROJECT_CATEGORIES, type ProjectCategory } from "@shared/schema";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useGenerateDescription } from "@/hooks/use-ai";
 import { useToast } from "@/hooks/use-toast";
-import { Wand2, Loader2, Upload, X, Image, Link, FileText, Sparkles, Github, Globe, Video, Plus, Trash2 } from "lucide-react";
+import { Wand2, Loader2, Upload, X, Image, Link, FileText, Sparkles, Github, Globe, Video, Plus, Trash2, Code2, GalleryHorizontal, BookOpen, Mic, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const categoryLabels: Record<ProjectCategory, { label: string; icon: typeof Code2 }> = {
+  project: { label: "Project", icon: Code2 },
+  exhibition: { label: "Exhibition", icon: GalleryHorizontal },
+  publication: { label: "Publication", icon: BookOpen },
+  talk: { label: "Invited Talk", icon: Mic },
+  experience: { label: "Professional Experience", icon: Building2 },
+};
 
 interface ProjectFormProps {
   open: boolean;
@@ -32,6 +41,7 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
   const form = useForm<InsertProject>({
     resolver: zodResolver(insertProjectSchema),
     defaultValues: {
+      category: "project",
       title: "",
       description: "",
       detailedDescription: "",
@@ -46,8 +56,14 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
       highlights: [],
       challenges: "",
       outcome: "",
+      venue: "",
+      publisher: "",
+      company: "",
+      location: "",
     },
   });
+  
+  const selectedCategory = form.watch("category") as ProjectCategory || "project";
 
   useEffect(() => {
     if (initialData) {
@@ -55,6 +71,7 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
       setHighlights(initialData.highlights || []);
     } else {
       form.reset({
+        category: "project",
         title: "",
         description: "",
         detailedDescription: "",
@@ -69,6 +86,10 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
         highlights: [],
         challenges: "",
         outcome: "",
+        venue: "",
+        publisher: "",
+        company: "",
+        location: "",
       });
       setHighlights([]);
     }
@@ -183,15 +204,50 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
 
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="space-y-4 pt-4">
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value || "project"}>
+                        <FormControl>
+                          <SelectTrigger data-testid="select-category">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {PROJECT_CATEGORIES.map((cat) => {
+                            const CategoryIcon = categoryLabels[cat].icon;
+                            return (
+                              <SelectItem key={cat} value={cat} data-testid={`option-${cat}`}>
+                                <div className="flex items-center gap-2">
+                                  <CategoryIcon className="w-4 h-4" />
+                                  {categoryLabels[cat].label}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Project Title *</FormLabel>
+                        <FormLabel>{selectedCategory === 'experience' ? 'Position Title' : selectedCategory === 'publication' ? 'Publication Title' : selectedCategory === 'talk' ? 'Talk Title' : selectedCategory === 'exhibition' ? 'Exhibition Title' : 'Project Title'} *</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g. E-commerce Dashboard" {...field} data-testid="input-title" />
+                          <Input 
+                            placeholder={selectedCategory === 'experience' ? 'e.g. Software Engineer' : selectedCategory === 'publication' ? 'e.g. Machine Learning Paper' : selectedCategory === 'talk' ? 'e.g. Keynote Speech' : selectedCategory === 'exhibition' ? 'e.g. Art Show' : 'e.g. E-commerce Dashboard'} 
+                            {...field} 
+                            data-testid="input-title" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -212,6 +268,76 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
                     )}
                   />
                 </div>
+
+                {/* Category-specific fields */}
+                {(selectedCategory === 'exhibition' || selectedCategory === 'talk') && (
+                  <FormField
+                    control={form.control}
+                    name="venue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{selectedCategory === 'talk' ? 'Conference/Event' : 'Venue'}</FormLabel>
+                        <FormControl>
+                          <Input 
+                            placeholder={selectedCategory === 'talk' ? 'e.g. TEDx, Academic Conference' : 'e.g. Gallery Name, Museum'} 
+                            {...field} 
+                            value={field.value || ""} 
+                            data-testid="input-venue" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {selectedCategory === 'publication' && (
+                  <FormField
+                    control={form.control}
+                    name="publisher"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Publisher/Journal</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. IEEE, Nature, O'Reilly" {...field} value={field.value || ""} data-testid="input-publisher" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {selectedCategory === 'experience' && (
+                  <FormField
+                    control={form.control}
+                    name="company"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Company/Organization</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. Google, Startup Inc." {...field} value={field.value || ""} data-testid="input-company" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {(selectedCategory === 'exhibition' || selectedCategory === 'talk' || selectedCategory === 'experience') && (
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <FormControl>
+                          <Input placeholder="e.g. New York, NY" {...field} value={field.value || ""} data-testid="input-location" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   control={form.control}

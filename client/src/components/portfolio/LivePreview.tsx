@@ -1,6 +1,15 @@
-import { type Portfolio, type Project } from "@shared/schema";
-import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles } from "lucide-react";
+import { type Portfolio, type Project, type ProjectCategory } from "@shared/schema";
+import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles, GalleryHorizontal, BookOpen, Mic, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Category configuration for display
+const categoryConfig: Record<ProjectCategory, { icon: typeof Code2; label: string; plural: string }> = {
+  project: { icon: Code2, label: "Project", plural: "Featured Projects" },
+  exhibition: { icon: GalleryHorizontal, label: "Exhibition", plural: "Exhibitions" },
+  publication: { icon: BookOpen, label: "Publication", plural: "Publications" },
+  talk: { icon: Mic, label: "Talk", plural: "Invited Talks" },
+  experience: { icon: Building2, label: "Experience", plural: "Professional Experience" },
+};
 
 interface ThemeConfig {
   background: string;
@@ -555,49 +564,61 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
         </div>
       </section>
 
-      {/* Projects Section */}
-      <section className={cn("py-20 px-8", theme.sectionBg)}>
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className={cn("p-2 rounded-lg", !hasCustomColors && theme.accentBg)} style={getAccentBgStyle()}>
-                <Code2 className={cn("w-5 h-5", !hasCustomColors && theme.accentText)} style={getAccentTextStyle()} />
-              </div>
-              <h2 className="text-3xl font-bold" data-testid="heading-projects">Featured Projects</h2>
-            </div>
-            <p className={cn("max-w-xl mx-auto", theme.mutedText)}>
-              A selection of projects I've worked on
-            </p>
-          </div>
+      {/* Content Sections - Grouped by Category */}
+      {(() => {
+        // Group projects by category
+        const groupedProjects = projects.reduce((acc, project) => {
+          const category = (project.category || 'project') as ProjectCategory;
+          if (!acc[category]) acc[category] = [];
+          acc[category].push(project);
+          return acc;
+        }, {} as Record<ProjectCategory, Project[]>);
+        
+        const categoryOrder: ProjectCategory[] = ['project', 'exhibition', 'publication', 'talk', 'experience'];
+        
+        return categoryOrder.map((category) => {
+          const categoryProjects = groupedProjects[category];
+          if (!categoryProjects || categoryProjects.length === 0) return null;
           
-          {projects.length === 0 ? (
-            <div className={cn(
-              "text-center py-16 rounded-2xl border-2 border-dashed",
-              theme.borderColor,
-              theme.mutedText
-            )}>
-              <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg">No projects yet</p>
-              <p className="text-sm mt-1">Add your first project to showcase your work</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {projects.map((project, index) => (
-                <div 
-                  key={project.id} 
-                  className={cn(
-                    "group relative rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 border",
-                    theme.cardBg,
-                    theme.cardBorder,
-                    !theme.isDark && "shadow-lg shadow-black/5",
-                    onProjectClick && "cursor-pointer"
-                  )}
-                  onClick={onProjectClick ? () => onProjectClick(project.id) : undefined}
-                  role={onProjectClick ? "button" : undefined}
-                  tabIndex={onProjectClick ? 0 : undefined}
-                  onKeyDown={onProjectClick ? (e) => e.key === "Enter" && onProjectClick(project.id) : undefined}
-                  data-testid={`card-project-${project.id}`}
-                >
+          const config = categoryConfig[category];
+          const CategoryIcon = config.icon;
+          
+          return (
+            <section key={category} className={cn("py-20 px-8", theme.sectionBg)} data-testid={`section-${category}`}>
+              <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-12">
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <div className={cn("p-2 rounded-lg", !hasCustomColors && theme.accentBg)} style={getAccentBgStyle()}>
+                      <CategoryIcon className={cn("w-5 h-5", !hasCustomColors && theme.accentText)} style={getAccentTextStyle()} />
+                    </div>
+                    <h2 className="text-3xl font-bold" data-testid={`heading-${category}`}>{config.plural}</h2>
+                  </div>
+                  <p className={cn("max-w-xl mx-auto", theme.mutedText)}>
+                    {category === 'project' && "A selection of projects I've worked on"}
+                    {category === 'exhibition' && "Featured exhibitions and showcases"}
+                    {category === 'publication' && "Published works and research"}
+                    {category === 'talk' && "Talks and presentations I've given"}
+                    {category === 'experience' && "Professional work experience"}
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {categoryProjects.map((project, index) => (
+                    <div 
+                      key={project.id} 
+                      className={cn(
+                        "group relative rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 border",
+                        theme.cardBg,
+                        theme.cardBorder,
+                        !theme.isDark && "shadow-lg shadow-black/5",
+                        onProjectClick && "cursor-pointer"
+                      )}
+                      onClick={onProjectClick ? () => onProjectClick(project.id) : undefined}
+                      role={onProjectClick ? "button" : undefined}
+                      tabIndex={onProjectClick ? 0 : undefined}
+                      onKeyDown={onProjectClick ? (e) => e.key === "Enter" && onProjectClick(project.id) : undefined}
+                      data-testid={`card-project-${project.id}`}
+                    >
                   {/* Click to view details badge */}
                   {onProjectClick && (
                     <div 
@@ -728,13 +749,32 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                         <span className="text-sm font-medium opacity-70">Project {index + 1}</span>
                       </div>
                     </div>
-                  )}
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            </section>
+          );
+        });
+      })()}
+      
+      {/* Empty state when no content */}
+      {projects.length === 0 && (
+        <section className={cn("py-20 px-8", theme.sectionBg)}>
+          <div className="max-w-6xl mx-auto">
+            <div className={cn(
+              "text-center py-16 rounded-2xl border-2 border-dashed",
+              theme.borderColor,
+              theme.mutedText
+            )}>
+              <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">No content yet</p>
+              <p className="text-sm mt-1">Add projects, exhibitions, publications, or other work to showcase</p>
             </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className={cn("py-12 text-center border-t", theme.borderColor, theme.mutedText)}>

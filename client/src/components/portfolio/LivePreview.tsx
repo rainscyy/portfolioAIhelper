@@ -360,12 +360,20 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
   const fontClass = portfolio.fontStyle === "serif" ? "font-serif" : 
                     portfolio.fontStyle === "mono" ? "font-mono" : "";
 
-  const customStyles = {
-    '--custom-primary': portfolio.customPrimaryColor || undefined,
-    '--custom-accent': portfolio.customAccentColor || undefined,
-  } as React.CSSProperties;
+  const customPrimary = portfolio.customPrimaryColor;
+  const customAccent = portfolio.customAccentColor;
+  const hasCustomColors = customPrimary || customAccent;
 
-  const hasCustomColors = portfolio.customPrimaryColor || portfolio.customAccentColor;
+  // Helper functions to get styles with custom color overrides
+  const getAccentTextStyle = () => customPrimary ? { color: customPrimary } : {};
+  const getAccentBgStyle = () => customPrimary ? { backgroundColor: `${customPrimary}20` } : {};
+  const getAccentSolidBgStyle = () => customPrimary ? { backgroundColor: customPrimary } : {};
+  const getAccentBorderStyle = () => customPrimary ? { borderColor: customPrimary } : {};
+  const getGradientStyle = () => customPrimary && customAccent 
+    ? { background: `linear-gradient(135deg, ${customPrimary}, ${customAccent})` }
+    : customPrimary 
+    ? { background: `linear-gradient(135deg, ${customPrimary}, ${customPrimary}cc)` }
+    : {};
 
   return (
     <div 
@@ -375,7 +383,6 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
         theme.text,
         fontClass
       )}
-      style={customStyles}
     >
       {/* Hero Section */}
       <header className={cn(
@@ -384,24 +391,33 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
       )}>
         {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={cn(
-            "absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-20",
-            `bg-gradient-to-br ${theme.accent}`
-          )} />
-          <div className={cn(
-            "absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-15",
-            `bg-gradient-to-br ${theme.accent}`
-          )} />
+          <div 
+            className={cn(
+              "absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-20",
+              !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
+            )} 
+            style={getGradientStyle()}
+          />
+          <div 
+            className={cn(
+              "absolute -bottom-32 -left-32 w-80 h-80 rounded-full blur-3xl opacity-15",
+              !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
+            )} 
+            style={getGradientStyle()}
+          />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
           {/* Profile Image */}
           {portfolio.profileImageUrl ? (
             <div className="relative inline-block">
-              <div className={cn(
-                "absolute inset-0 rounded-full blur-md opacity-60",
-                `bg-gradient-to-br ${theme.accent}`
-              )} />
+              <div 
+                className={cn(
+                  "absolute inset-0 rounded-full blur-md opacity-60",
+                  !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
+                )} 
+                style={getGradientStyle()}
+              />
               <img 
                 src={portfolio.profileImageUrl} 
                 alt="Profile" 
@@ -410,10 +426,13 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
               />
             </div>
           ) : (
-            <div className={cn(
-              "w-36 h-36 rounded-full mx-auto flex items-center justify-center ring-4 ring-white/10",
-              `bg-gradient-to-br ${theme.accent}`
-            )}>
+            <div 
+              className={cn(
+                "w-36 h-36 rounded-full mx-auto flex items-center justify-center ring-4 ring-white/10",
+                !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
+              )}
+              style={getGradientStyle()}
+            >
               <User className="w-16 h-16 text-white/80" />
             </div>
           )}
@@ -440,9 +459,10 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                 rel="noreferrer" 
                 className={cn(
                   "p-3 rounded-full transition-all duration-300 hover:scale-110",
-                  theme.socialBg,
-                  theme.socialHover
+                  !hasCustomColors && theme.socialBg,
+                  !hasCustomColors && theme.socialHover
                 )}
+                style={getAccentBgStyle()}
                 data-testid="link-github"
               >
                 <Github className="w-5 h-5" />
@@ -455,9 +475,10 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                 rel="noreferrer" 
                 className={cn(
                   "p-3 rounded-full transition-all duration-300 hover:scale-110",
-                  theme.socialBg,
-                  theme.socialHover
+                  !hasCustomColors && theme.socialBg,
+                  !hasCustomColors && theme.socialHover
                 )}
+                style={getAccentBgStyle()}
                 data-testid="link-linkedin"
               >
                 <Linkedin className="w-5 h-5" />
@@ -470,9 +491,10 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                 rel="noreferrer" 
                 className={cn(
                   "p-3 rounded-full transition-all duration-300 hover:scale-110",
-                  theme.socialBg,
-                  theme.socialHover
+                  !hasCustomColors && theme.socialBg,
+                  !hasCustomColors && theme.socialHover
                 )}
+                style={getAccentBgStyle()}
                 data-testid="link-website"
               >
                 <Globe className="w-5 h-5" />
@@ -483,9 +505,10 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                 href={`mailto:${portfolio.email}`} 
                 className={cn(
                   "p-3 rounded-full transition-all duration-300 hover:scale-110",
-                  theme.socialBg,
-                  theme.socialHover
+                  !hasCustomColors && theme.socialBg,
+                  !hasCustomColors && theme.socialHover
                 )}
+                style={getAccentBgStyle()}
                 data-testid="link-email"
               >
                 <Mail className="w-5 h-5" />
@@ -499,8 +522,8 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
       <section className="py-16 px-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
-            <div className={cn("p-2 rounded-lg", theme.accentBg)}>
-              <Sparkles className={cn("w-5 h-5", theme.accentText)} />
+            <div className={cn("p-2 rounded-lg", !hasCustomColors && theme.accentBg)} style={getAccentBgStyle()}>
+              <Sparkles className={cn("w-5 h-5", !hasCustomColors && theme.accentText)} style={getAccentTextStyle()} />
             </div>
             <h2 className="text-2xl font-bold" data-testid="heading-about">About Me</h2>
           </div>
@@ -512,10 +535,13 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
             !theme.isDark && "shadow-lg shadow-black/5"
           )}>
             {/* Quote decoration */}
-            <div className={cn(
-              "absolute -top-3 -left-2 text-6xl font-serif opacity-20",
-              theme.quoteMark
-            )}>
+            <div 
+              className={cn(
+                "absolute -top-3 -left-2 text-6xl font-serif opacity-20",
+                !hasCustomColors && theme.quoteMark
+              )}
+              style={getAccentTextStyle()}
+            >
               "
             </div>
             
@@ -534,8 +560,8 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className={cn("p-2 rounded-lg", theme.accentBg)}>
-                <Code2 className={cn("w-5 h-5", theme.accentText)} />
+              <div className={cn("p-2 rounded-lg", !hasCustomColors && theme.accentBg)} style={getAccentBgStyle()}>
+                <Code2 className={cn("w-5 h-5", !hasCustomColors && theme.accentText)} style={getAccentTextStyle()} />
               </div>
               <h2 className="text-3xl font-bold" data-testid="heading-projects">Featured Projects</h2>
             </div>
@@ -574,11 +600,14 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                 >
                   {/* Click to view details badge */}
                   {onProjectClick && (
-                    <div className={cn(
-                      "absolute top-3 right-3 z-10 px-2 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity",
-                      theme.tagBg,
-                      theme.tagText
-                    )}>
+                    <div 
+                      className={cn(
+                        "absolute top-3 right-3 z-10 px-2 py-1 rounded-full text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity",
+                        !hasCustomColors && theme.tagBg,
+                        !hasCustomColors && theme.tagText
+                      )}
+                      style={{...getAccentBgStyle(), ...getAccentTextStyle()}}
+                    >
                       Click for details
                     </div>
                   )}
@@ -597,8 +626,9 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                           onClick={(e) => e.stopPropagation()}
                           className={cn(
                             "inline-flex items-center gap-1.5 text-sm font-medium transition-colors",
-                            theme.accentText
+                            !hasCustomColors && theme.accentText
                           )}
+                          style={getAccentTextStyle()}
                           data-testid={`link-project-${project.id}`}
                         >
                           <ExternalLink className="w-3.5 h-3.5" />
@@ -613,11 +643,14 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                       theme.borderColor
                     )}>
                       {project.role && (
-                        <span className={cn(
-                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
-                          theme.tagBg,
-                          theme.tagText
-                        )}>
+                        <span 
+                          className={cn(
+                            "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                            !hasCustomColors && theme.tagBg,
+                            !hasCustomColors && theme.tagText
+                          )}
+                          style={{...getAccentBgStyle(), ...getAccentTextStyle()}}
+                        >
                           <Briefcase className="w-3.5 h-3.5" />
                           {project.role}
                         </span>

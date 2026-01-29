@@ -61,7 +61,23 @@ The server uses a clean separation:
 Core tables:
 - `users` - Basic user accounts
 - `portfolios` - Portfolio metadata (name, bio, theme, links)
-- `projects` - Individual projects within portfolios
+- `projects` - Individual items within portfolios (supports multiple categories)
+
+### Category System
+Projects support 5 categories for diverse portfolio content:
+- `project` - Technical projects with technologies, highlights
+- `exhibition` - Art exhibitions with venue, location
+- `publication` - Published works with publisher info
+- `talk` - Invited talks/presentations with conference/event info
+- `experience` - Professional experience with company, location
+
+Category-specific fields:
+- `venue` - For exhibitions and talks
+- `publisher` - For publications
+- `company` - For work experience
+- `location` - For exhibitions, talks, and experience
+
+All categories share common fields: title, description, year, role, media gallery, links
 
 ### API Contract
 The API contract is defined in `shared/routes.ts` using Zod schemas. This provides:

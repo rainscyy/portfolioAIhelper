@@ -11,9 +11,18 @@ import { ThemeSelector } from "@/components/portfolio/ThemeSelector";
 import { ColorPicker } from "@/components/portfolio/ColorPicker";
 import { ProjectForm } from "@/components/portfolio/ProjectForm";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, Edit, Trash2, LayoutTemplate, Palette, Share2, ExternalLink } from "lucide-react";
+import { Loader2, Plus, Edit, Trash2, LayoutTemplate, Palette, Share2, ExternalLink, Code2, GalleryHorizontal, BookOpen, Mic, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { type Project, type InsertProject } from "@shared/schema";
+import { type Project, type InsertProject, type ProjectCategory, PROJECT_CATEGORIES } from "@shared/schema";
+import { Badge } from "@/components/ui/badge";
+
+const categoryConfig: Record<ProjectCategory, { icon: typeof Code2; label: string }> = {
+  project: { icon: Code2, label: "Projects" },
+  exhibition: { icon: GalleryHorizontal, label: "Exhibitions" },
+  publication: { icon: BookOpen, label: "Publications" },
+  talk: { icon: Mic, label: "Invited Talks" },
+  experience: { icon: Building2, label: "Experience" },
+};
 
 export default function Editor() {
   const [, params] = useRoute("/editor/:id");
@@ -111,41 +120,76 @@ export default function Editor() {
               <div className="p-4 pb-20">
                 <TabsContent value="projects" className="mt-0 space-y-4">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-semibold text-lg">Your Projects</h3>
-                    <Button size="sm" onClick={handleAddClick}>
+                    <h3 className="font-semibold text-lg">Your Content</h3>
+                    <Button size="sm" onClick={handleAddClick} data-testid="button-add-project">
                       <Plus className="w-4 h-4 mr-2" /> Add New
                     </Button>
                   </div>
 
-                  <div className="space-y-3">
-                    {(portfolio.projects || []).map((project) => (
-                      <Card key={project.id} className="group hover:border-primary/50 transition-colors">
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-bold">{project.title}</h4>
-                              <p className="text-xs text-muted-foreground line-clamp-1">{project.description}</p>
-                            </div>
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Button variant="ghost" size="icon" onClick={() => handleEditClick(project)}>
-                                <Edit className="w-4 h-4 text-primary" />
-                              </Button>
-                              <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)}>
-                                <Trash2 className="w-4 h-4 text-destructive" />
-                              </Button>
-                            </div>
+                  {/* Group items by category */}
+                  {(() => {
+                    const projects = portfolio.projects || [];
+                    const grouped = projects.reduce((acc, project) => {
+                      const cat = (project.category || 'project') as ProjectCategory;
+                      if (!acc[cat]) acc[cat] = [];
+                      acc[cat].push(project);
+                      return acc;
+                    }, {} as Record<ProjectCategory, Project[]>);
+
+                    if (projects.length === 0) {
+                      return (
+                        <div className="text-center py-8 border-2 border-dashed rounded-xl bg-muted/30">
+                          <p className="text-muted-foreground text-sm">No content yet</p>
+                          <Button variant="ghost" onClick={handleAddClick}>Add your first item</Button>
+                        </div>
+                      );
+                    }
+
+                    return PROJECT_CATEGORIES.map((category) => {
+                      const items = grouped[category];
+                      if (!items || items.length === 0) return null;
+
+                      const config = categoryConfig[category];
+                      const CategoryIcon = config.icon;
+
+                      return (
+                        <div key={category} className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                            <CategoryIcon className="w-4 h-4" />
+                            {config.label} ({items.length})
                           </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                    
-                    {(portfolio.projects || []).length === 0 && (
-                      <div className="text-center py-8 border-2 border-dashed rounded-xl bg-muted/30">
-                        <p className="text-muted-foreground text-sm">No projects yet</p>
-                        <Button variant="ghost" onClick={handleAddClick}>Add your first project</Button>
-                      </div>
-                    )}
-                  </div>
+                          <div className="space-y-2">
+                            {items.map((project) => (
+                              <Card key={project.id} className="group hover:border-primary/50 transition-colors" data-testid={`card-item-${project.id}`}>
+                                <CardContent className="p-3">
+                                  <div className="flex justify-between items-start gap-2">
+                                    <div className="min-w-0 flex-1">
+                                      <h4 className="font-bold text-sm truncate">{project.title}</h4>
+                                      <p className="text-xs text-muted-foreground line-clamp-1">{project.description}</p>
+                                      {(project.venue || project.company || project.publisher) && (
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                          {project.venue || project.company || project.publisher}
+                                          {project.location && ` • ${project.location}`}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                      <Button variant="ghost" size="icon" onClick={() => handleEditClick(project)} data-testid={`button-edit-${project.id}`}>
+                                        <Edit className="w-4 h-4 text-primary" />
+                                      </Button>
+                                      <Button variant="ghost" size="icon" onClick={() => handleDeleteProject(project.id)} data-testid={`button-delete-${project.id}`}>
+                                        <Trash2 className="w-4 h-4 text-destructive" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    });
+                  })()}
                 </TabsContent>
 
                 <TabsContent value="design" className="mt-0 space-y-8">

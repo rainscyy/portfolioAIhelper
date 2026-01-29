@@ -176,7 +176,7 @@ export function ProjectForm({ open, onOpenChange, onSubmit, initialData, isPendi
       <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">
-            {initialData ? "Edit Project" : "Add Project"}
+            {initialData ? `Edit ${categoryLabels[selectedCategory].label}` : `Add ${categoryLabels[selectedCategory].label}`}
           </DialogTitle>
         </DialogHeader>
         

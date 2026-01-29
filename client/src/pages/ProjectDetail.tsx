@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { themeConfigs } from "@/components/portfolio/LivePreview";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   ArrowLeft, 
   Github, 
@@ -27,8 +28,93 @@ import {
   Play,
   X,
   Plus,
-  Trash2
+  Trash2,
+  Pencil
 } from "lucide-react";
+
+interface EditableTextProps {
+  value: string;
+  onSave: (value: string) => void;
+  className?: string;
+  placeholder?: string;
+  multiline?: boolean;
+  as?: 'h1' | 'p' | 'span';
+}
+
+function EditableText({ value, onSave, className, placeholder, multiline = false, as = 'span' }: EditableTextProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(value);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setEditValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  const handleSave = () => {
+    setIsEditing(false);
+    if (editValue !== value) {
+      onSave(editValue);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !multiline) {
+      e.preventDefault();
+      handleSave();
+    }
+    if (e.key === 'Escape') {
+      setEditValue(value);
+      setIsEditing(false);
+    }
+  };
+
+  if (isEditing) {
+    if (multiline) {
+      return (
+        <Textarea
+          ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onBlur={handleSave}
+          onKeyDown={handleKeyDown}
+          className={cn("bg-transparent border-dashed resize-none", className)}
+          placeholder={placeholder}
+          rows={4}
+        />
+      );
+    }
+    return (
+      <Input
+        ref={inputRef as React.RefObject<HTMLInputElement>}
+        value={editValue}
+        onChange={(e) => setEditValue(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className={cn("bg-transparent border-dashed", className)}
+        placeholder={placeholder}
+      />
+    );
+  }
+
+  const Tag = as;
+  return (
+    <Tag 
+      className={cn("group cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded px-1 -mx-1 transition-colors inline-flex items-center gap-2", className)}
+      onClick={() => setIsEditing(true)}
+      title="Click to edit"
+    >
+      {value || <span className="opacity-50 italic">{placeholder || 'Click to add'}</span>}
+      <Pencil className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity flex-shrink-0" />
+    </Tag>
+  );
+}
 
 function extractVideoId(url: string): { type: 'youtube' | 'vimeo' | null; id: string | null } {
   const youtubeMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -422,31 +508,40 @@ export default function ProjectDetail() {
         {/* Title overlay */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-16 pt-32">
           <div className="flex flex-wrap items-center gap-3 mb-6">
-            {project.role && (
-              <Badge variant="secondary" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
-                <Briefcase className="w-3.5 h-3.5 mr-2" />
-                {project.role}
-              </Badge>
-            )}
-            {project.year && (
-              <Badge variant="outline" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
-                <Calendar className="w-3.5 h-3.5 mr-2" />
-                {project.year}
-              </Badge>
-            )}
+            <Badge variant="secondary" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
+              <Briefcase className="w-3.5 h-3.5 mr-2" />
+              <EditableText 
+                value={project.role || ''} 
+                onSave={(val) => updateProjectMutation.mutate({ role: val })}
+                placeholder="Add role"
+              />
+            </Badge>
+            <Badge variant="outline" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
+              <Calendar className="w-3.5 h-3.5 mr-2" />
+              <EditableText 
+                value={project.year || ''} 
+                onSave={(val) => updateProjectMutation.mutate({ year: val })}
+                placeholder="Add year"
+              />
+            </Badge>
           </div>
 
-          <h1 
+          <EditableText 
+            value={project.title}
+            onSave={(val) => updateProjectMutation.mutate({ title: val })}
             className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-none"
-            style={{ fontFamily: 'var(--font-display)' }}
-            data-testid="text-project-title"
-          >
-            {project.title}
-          </h1>
+            placeholder="Project Title"
+            as="h1"
+          />
           
-          <p className={cn("text-xl md:text-2xl max-w-3xl leading-relaxed", theme.mutedText)} data-testid="text-project-description">
-            {project.description}
-          </p>
+          <EditableText
+            value={project.description || ''}
+            onSave={(val) => updateProjectMutation.mutate({ description: val })}
+            className={cn("text-xl md:text-2xl max-w-3xl leading-relaxed", theme.mutedText)}
+            placeholder="Add a short description"
+            multiline
+            as="p"
+          />
 
           {project.technologies && project.technologies.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-8">
@@ -647,79 +742,119 @@ export default function ProjectDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-20">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-3 space-y-16">
-            {project.detailedDescription && (
-              <section>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
-                    <Code2 className={cn("w-5 h-5", theme.accentText)} />
-                  </div>
-                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                    About This Project
-                  </h2>
+            <section>
+              <div className="flex items-center gap-3 mb-6">
+                <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                  <Code2 className={cn("w-5 h-5", theme.accentText)} />
                 </div>
-                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-detailed-description">
-                  {project.detailedDescription}
-                </p>
-              </section>
-            )}
+                <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                  About This Project
+                </h2>
+              </div>
+              <EditableText
+                value={project.detailedDescription || ''}
+                onSave={(val) => updateProjectMutation.mutate({ detailedDescription: val })}
+                className={cn("text-lg leading-relaxed", theme.mutedText)}
+                placeholder="Add detailed description about this project..."
+                multiline
+                as="p"
+              />
+            </section>
 
-            {project.challenges && (
-              <section>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
-                    <AlertTriangle className={cn("w-5 h-5", theme.accentText)} />
-                  </div>
-                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                    Challenges Faced
-                  </h2>
+            <section>
+              <div className="flex items-center gap-3 mb-6">
+                <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                  <AlertTriangle className={cn("w-5 h-5", theme.accentText)} />
                 </div>
-                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-challenges">
-                  {project.challenges}
-                </p>
-              </section>
-            )}
+                <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                  Challenges Faced
+                </h2>
+              </div>
+              <EditableText
+                value={project.challenges || ''}
+                onSave={(val) => updateProjectMutation.mutate({ challenges: val })}
+                className={cn("text-lg leading-relaxed", theme.mutedText)}
+                placeholder="Describe the challenges you faced..."
+                multiline
+                as="p"
+              />
+            </section>
 
-            {project.outcome && (
-              <section>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
-                    <TrendingUp className={cn("w-5 h-5", theme.accentText)} />
-                  </div>
-                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                    Results & Impact
-                  </h2>
+            <section>
+              <div className="flex items-center gap-3 mb-6">
+                <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                  <TrendingUp className={cn("w-5 h-5", theme.accentText)} />
                 </div>
-                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-outcome">
-                  {project.outcome}
-                </p>
-              </section>
-            )}
+                <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                  Results & Impact
+                </h2>
+              </div>
+              <EditableText
+                value={project.outcome || ''}
+                onSave={(val) => updateProjectMutation.mutate({ outcome: val })}
+                className={cn("text-lg leading-relaxed", theme.mutedText)}
+                placeholder="Describe the results and impact..."
+                multiline
+                as="p"
+              />
+            </section>
           </div>
 
           {/* Right Column - Highlights & Links */}
           <div className="lg:col-span-2 space-y-12">
-            {project.highlights && project.highlights.length > 0 && (
-              <section className="sticky top-24">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
-                    <CheckCircle2 className={cn("w-5 h-5", theme.accentText)} />
-                  </div>
-                  <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
-                    Key Highlights
-                  </h2>
+            <section className="sticky top-24">
+              <div className="flex items-center gap-3 mb-6">
+                <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                  <CheckCircle2 className={cn("w-5 h-5", theme.accentText)} />
                 </div>
-                <ul className="space-y-4">
-                  {project.highlights.map((highlight, index) => (
-                    <li key={index} className={cn("flex items-start gap-4 p-4 rounded-xl border", theme.cardBg, theme.cardBorder)}>
-                      <span className={cn("flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold", theme.accentBg, theme.accentText)}>
-                        {index + 1}
-                      </span>
-                      <span className="leading-relaxed">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            )}
+                <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
+                  Key Highlights
+                </h2>
+              </div>
+              <ul className="space-y-4">
+                {(project.highlights || []).map((highlight, index) => (
+                  <li key={index} className={cn("flex items-start gap-4 p-4 rounded-xl border group", theme.cardBg, theme.cardBorder)}>
+                    <span className={cn("flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold", theme.accentBg, theme.accentText)}>
+                      {index + 1}
+                    </span>
+                    <EditableText
+                      value={highlight}
+                      onSave={(val) => {
+                        const newHighlights = [...(project.highlights || [])];
+                        newHighlights[index] = val;
+                        updateProjectMutation.mutate({ highlights: newHighlights });
+                      }}
+                      className="leading-relaxed flex-1"
+                      placeholder="Add highlight"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                      onClick={() => {
+                        const newHighlights = (project.highlights || []).filter((_, i) => i !== index);
+                        updateProjectMutation.mutate({ highlights: newHighlights });
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </li>
+                ))}
+                <li>
+                  <Button
+                    variant="outline"
+                    className={cn("w-full", theme.borderColor)}
+                    onClick={() => {
+                      const newHighlights = [...(project.highlights || []), 'New highlight'];
+                      updateProjectMutation.mutate({ highlights: newHighlights });
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Highlight
+                  </Button>
+                </li>
+              </ul>
+            </section>
 
             <section>
               <h3 className="text-lg font-semibold mb-4" style={{ fontFamily: 'var(--font-display)' }}>

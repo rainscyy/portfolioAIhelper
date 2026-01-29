@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Layout } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   const [location] = useLocation();
@@ -20,10 +21,11 @@ export function Navbar() {
           </Link>
 
           {!isBuilder && (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 gap-2">
               <Link href="/">
                 <Button variant="ghost">Home</Button>
               </Link>
+              <ThemeToggle />
               <Link href="/login">
                 <Button variant="outline" className="hidden sm:inline-flex">Sign In</Button>
               </Link>
@@ -35,6 +37,7 @@ export function Navbar() {
           
           {isBuilder && (
              <div className="flex items-center gap-2">
+               <ThemeToggle />
                <span className="text-sm text-muted-foreground hidden sm:block">Draft Mode</span>
                <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
              </div>

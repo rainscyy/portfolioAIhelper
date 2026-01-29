@@ -53,7 +53,9 @@ function EditableText({ value, onSave, className, placeholder, multiline = false
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
-      inputRef.current.select();
+      if (inputRef.current instanceof HTMLInputElement) {
+        inputRef.current.select();
+      }
     }
   }, [isEditing]);
 
@@ -78,27 +80,34 @@ function EditableText({ value, onSave, className, placeholder, multiline = false
   if (isEditing) {
     if (multiline) {
       return (
-        <Textarea
+        <textarea
           ref={inputRef as React.RefObject<HTMLTextAreaElement>}
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
-          className={cn("bg-transparent border-dashed resize-none", className)}
+          className={cn(
+            "bg-transparent border border-dashed border-current/30 rounded px-2 py-1 w-full resize-none focus:outline-none focus:border-current/50",
+            className
+          )}
           placeholder={placeholder}
           rows={4}
         />
       );
     }
     return (
-      <Input
+      <input
         ref={inputRef as React.RefObject<HTMLInputElement>}
         value={editValue}
         onChange={(e) => setEditValue(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
-        className={cn("bg-transparent border-dashed", className)}
+        className={cn(
+          "bg-transparent border border-dashed border-current/30 rounded px-2 py-1 w-full focus:outline-none focus:border-current/50",
+          className
+        )}
         placeholder={placeholder}
+        style={{ height: 'auto' }}
       />
     );
   }

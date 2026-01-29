@@ -8,7 +8,7 @@ export function Navbar() {
   const isBuilder = location.startsWith("/editor");
 
   return (
-    <nav className="border-b bg-background/80 backdrop-blur-lg sticky top-0 z-50">
+    <nav className="glass-navbar sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <Link href="/" className="flex items-center space-x-2">

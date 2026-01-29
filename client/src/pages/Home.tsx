@@ -243,7 +243,7 @@ export default function Home() {
                     <Github className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
                       placeholder="GitHub Username or URL" 
-                      className="pl-9 h-12" 
+                      className="pl-9 h-12 glass-input" 
                       value={github}
                       onChange={(e) => setGithub(e.target.value)}
                     />
@@ -252,7 +252,7 @@ export default function Home() {
                     <Linkedin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
                       placeholder="LinkedIn Profile URL" 
-                      className="pl-9 h-12" 
+                      className="pl-9 h-12 glass-input" 
                       value={linkedin}
                       onChange={(e) => setLinkedin(e.target.value)}
                     />

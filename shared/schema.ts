@@ -32,9 +32,21 @@ export const portfolios = pgTable("portfolios", {
   customAccentColor: text("custom_accent_color"), // Custom accent color hex
 });
 
+// Project categories
+export const PROJECT_CATEGORIES = [
+  'project',
+  'exhibition', 
+  'publication',
+  'talk',
+  'experience'
+] as const;
+
+export type ProjectCategory = typeof PROJECT_CATEGORIES[number];
+
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   portfolioId: integer("portfolio_id").notNull().references(() => portfolios.id, { onDelete: "cascade" }),
+  category: text("category").default("project"), // project, exhibition, publication, talk, experience
   title: text("title").notNull(),
   description: text("description"),
   detailedDescription: text("detailed_description"), // Full description for detail page
@@ -51,6 +63,11 @@ export const projects = pgTable("projects", {
   outcome: text("outcome"), // Results/impact
   mediaGallery: jsonb("media_gallery").$type<MediaItem[]>(), // Gallery of images and videos
   order: integer("order").default(0),
+  // Category-specific fields
+  venue: text("venue"), // For exhibitions, talks
+  publisher: text("publisher"), // For publications
+  company: text("company"), // For experience
+  location: text("location"), // For exhibitions, talks, experience
 });
 
 // Media gallery item types

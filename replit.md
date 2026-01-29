@@ -88,16 +88,25 @@ The AI client is configured in `server/replit_integrations/image/client.ts` and 
 - `AI_INTEGRATIONS_OPENAI_BASE_URL`
 
 ### Theme System
-Portfolio themes are defined in `LivePreview.tsx` with 10 professional themes:
+Portfolio themes are defined in `LivePreview.tsx` and exported via `themeConfigs` for use across pages:
 - Clean Light, Modern Dark, Corporate Blue, Minimalist
 - Warm Sunset, Forest Green, Ocean Deep, Soft Lavender
 - Elegant Noir, Fresh Mint
+- Pixel (retro dark), Watercolor (soft pastels), Dreamy (purple/pink), Business (professional blue)
+- Frosted Glass (low saturation with orange accents), Sand Blue (blue gradient), Apple Minimal (clean white)
 
 Each theme includes:
 - Color schemes with proper contrast
 - Font styles (sans, serif, mono)
 - Gradient backgrounds and decorative elements
 - Card styling with consistent accent colors
+- isDark flag for conditional dark/light styling
+
+Custom Color Support:
+- Users can override theme accent colors with customPrimaryColor and customAccentColor
+- ColorPicker component with 8 preset color combinations
+- Manual hex color inputs for precise customization
+- Custom colors are stored in portfolio database and applied via CSS variables
 
 CSS variables in `index.css` provide the design token foundation.
 
@@ -107,6 +116,8 @@ Projects have dedicated detail pages with:
 - Multiple link types (GitHub, Demo, Video)
 - Highlights list, challenges, and outcome sections
 - Navigation back to portfolio editor
+- Theme consistency: ProjectDetail uses the same themeConfigs as LivePreview
+- All UI elements (buttons, badges, cards, sections) use theme classes dynamically
 
 Project cards in LivePreview are clickable with visual feedback and keyboard accessibility.
 

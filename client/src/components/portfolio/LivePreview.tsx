@@ -22,7 +22,7 @@ interface ThemeConfig {
   isDark: boolean;
 }
 
-const themeConfigs: Record<string, ThemeConfig> = {
+export const themeConfigs: Record<string, ThemeConfig> = {
   light: {
     background: "bg-gradient-to-br from-[#f5ebe0] via-[#f8f4ef] to-[#faf6f1]",
     text: "text-[#2d2a26]",

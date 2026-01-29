@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useCallback } from "react";
+import { themeConfigs } from "@/components/portfolio/LivePreview";
 import { 
   ArrowLeft, 
   Github, 
@@ -238,9 +239,26 @@ export default function ProjectDetail() {
   }
 
   const mediaGallery: MediaItem[] = project.mediaGallery || [];
+  
+  const theme = themeConfigs[portfolio?.colorTheme || "light"] || themeConfigs.light;
+  const fontClass = portfolio?.fontStyle === "serif" ? "font-serif" : 
+                    portfolio?.fontStyle === "mono" ? "font-mono" : "";
+  
+  const customStyles = {
+    '--custom-primary': portfolio?.customPrimaryColor || undefined,
+    '--custom-accent': portfolio?.customAccentColor || undefined,
+  } as React.CSSProperties;
 
   return (
-    <div className="min-h-screen gradient-bg blob-bg">
+    <div 
+      className={cn(
+        "min-h-screen",
+        theme.background,
+        theme.text,
+        fontClass
+      )}
+      style={customStyles}
+    >
       {/* Minimal Header */}
       <header className="fixed top-0 left-0 right-0 z-50 p-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -248,7 +266,7 @@ export default function ProjectDetail() {
             <Button 
               variant="outline" 
               size="sm" 
-              className="bg-card/80 backdrop-blur-sm shadow-lg border-border/50"
+              className={cn("backdrop-blur-sm shadow-lg", theme.cardBg, theme.cardBorder)}
               data-testid="button-back"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -259,21 +277,21 @@ export default function ProjectDetail() {
           <div className="flex items-center gap-2">
             {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noreferrer">
-                <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm shadow-lg" data-testid="link-github">
+                <Button variant="outline" size="icon" className={cn("backdrop-blur-sm shadow-lg", theme.cardBg, theme.cardBorder)} data-testid="link-github">
                   <Github className="w-4 h-4" />
                 </Button>
               </a>
             )}
             {project.demoUrl && (
               <a href={project.demoUrl} target="_blank" rel="noreferrer">
-                <Button variant="outline" size="icon" className="bg-card/80 backdrop-blur-sm shadow-lg" data-testid="link-demo">
+                <Button variant="outline" size="icon" className={cn("backdrop-blur-sm shadow-lg", theme.cardBg, theme.cardBorder)} data-testid="link-demo">
                   <Globe className="w-4 h-4" />
                 </Button>
               </a>
             )}
             {project.linkUrl && (
               <a href={project.linkUrl} target="_blank" rel="noreferrer">
-                <Button size="icon" className="shadow-lg" data-testid="link-project">
+                <Button size="icon" className={cn("shadow-lg", `bg-gradient-to-r ${theme.accent} text-white`)} data-testid="link-project">
                   <ExternalLink className="w-4 h-4" />
                 </Button>
               </a>
@@ -286,7 +304,7 @@ export default function ProjectDetail() {
       <section 
         className={cn(
           "relative min-h-[70vh] flex items-end transition-all duration-300",
-          isDragging && "ring-4 ring-primary ring-inset"
+          isDragging && cn("ring-4 ring-inset", theme.accentText.replace("text-", "ring-"))
         )}
         onDrop={handleCoverDrop}
         onDragOver={handleDragOver}
@@ -301,11 +319,11 @@ export default function ProjectDetail() {
               className="absolute inset-0 w-full h-full object-cover"
               data-testid="img-project-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            <div className={cn("absolute inset-0 bg-gradient-to-t via-transparent to-transparent", theme.isDark ? "from-gray-950" : "from-white/80")} />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/5 to-background flex items-center justify-center">
-            <div className="text-center text-muted-foreground">
+          <div className={cn("absolute inset-0 flex items-center justify-center", theme.sectionBg)}>
+            <div className={cn("text-center", theme.mutedText)}>
               <Image className="w-16 h-16 mx-auto mb-4 opacity-50" />
               <p className="text-lg font-medium">Drag & drop a cover image here</p>
             </div>
@@ -313,8 +331,8 @@ export default function ProjectDetail() {
         )}
 
         {isDragging && (
-          <div className="absolute inset-0 bg-primary/20 backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="text-center text-primary">
+          <div className={cn("absolute inset-0 backdrop-blur-sm flex items-center justify-center z-10", theme.accentBg)}>
+            <div className={cn("text-center", theme.accentText)}>
               <Upload className="w-16 h-16 mx-auto mb-4 animate-bounce" />
               <p className="text-xl font-bold">Drop cover image here</p>
             </div>
@@ -322,9 +340,9 @@ export default function ProjectDetail() {
         )}
 
         {uploading && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-20">
+          <div className={cn("absolute inset-0 backdrop-blur-sm flex items-center justify-center z-20", theme.isDark ? "bg-gray-950/80" : "bg-white/80")}>
             <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <div className={cn("w-12 h-12 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4", theme.accentText.replace("text-", "border-"))} />
               <p className="text-lg font-medium">Uploading...</p>
             </div>
           </div>
@@ -334,13 +352,13 @@ export default function ProjectDetail() {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 pb-16 pt-32">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             {project.role && (
-              <Badge variant="secondary" className="bg-card/90 backdrop-blur-sm text-sm px-4 py-1.5">
+              <Badge variant="secondary" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
                 <Briefcase className="w-3.5 h-3.5 mr-2" />
                 {project.role}
               </Badge>
             )}
             {project.year && (
-              <Badge variant="outline" className="bg-card/90 backdrop-blur-sm text-sm px-4 py-1.5">
+              <Badge variant="outline" className={cn("backdrop-blur-sm text-sm px-4 py-1.5", theme.cardBg, theme.cardBorder)}>
                 <Calendar className="w-3.5 h-3.5 mr-2" />
                 {project.year}
               </Badge>
@@ -355,7 +373,7 @@ export default function ProjectDetail() {
             {project.title}
           </h1>
           
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl leading-relaxed" data-testid="text-project-description">
+          <p className={cn("text-xl md:text-2xl max-w-3xl leading-relaxed", theme.mutedText)} data-testid="text-project-description">
             {project.description}
           </p>
 
@@ -364,7 +382,7 @@ export default function ProjectDetail() {
               {project.technologies.map((tech) => (
                 <Badge 
                   key={tech} 
-                  className="bg-primary/10 text-primary border-primary/20 text-sm px-4 py-1.5"
+                  className={cn("text-sm px-4 py-1.5", theme.tagBg, theme.tagText)}
                 >
                   {tech}
                 </Badge>
@@ -380,8 +398,8 @@ export default function ProjectDetail() {
         {project.videoUrl && (
           <section className="mb-20">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Play className="w-6 h-6 text-primary" />
+              <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", theme.accentBg)}>
+                <Play className={cn("w-6 h-6", theme.accentText)} />
               </div>
               <h2 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                 Video Demo
@@ -389,7 +407,7 @@ export default function ProjectDetail() {
             </div>
             
             {videoEmbed?.type === 'youtube' ? (
-              <div className="aspect-video rounded-xl overflow-hidden shadow-2xl bg-card">
+              <div className={cn("aspect-video rounded-xl overflow-hidden shadow-2xl", theme.cardBg)}>
                 <iframe
                   src={`https://www.youtube.com/embed/${videoEmbed.id}`}
                   title="YouTube video"
@@ -400,7 +418,7 @@ export default function ProjectDetail() {
                 />
               </div>
             ) : videoEmbed?.type === 'vimeo' ? (
-              <div className="aspect-video rounded-xl overflow-hidden shadow-2xl bg-card">
+              <div className={cn("aspect-video rounded-xl overflow-hidden shadow-2xl", theme.cardBg)}>
                 <iframe
                   src={`https://player.vimeo.com/video/${videoEmbed.id}`}
                   title="Vimeo video"
@@ -411,12 +429,12 @@ export default function ProjectDetail() {
                 />
               </div>
             ) : (
-              <Card className="p-6">
+              <Card className={cn("p-6", theme.cardBg, theme.cardBorder)}>
                 <a 
                   href={project.videoUrl} 
                   target="_blank" 
                   rel="noreferrer"
-                  className="flex items-center gap-3 text-primary text-lg"
+                  className={cn("flex items-center gap-3 text-lg", theme.accentText)}
                   data-testid="link-video"
                 >
                   <ExternalLink className="w-5 h-5" />
@@ -431,8 +449,8 @@ export default function ProjectDetail() {
         <section className="mb-20">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                <Image className="w-6 h-6 text-accent" />
+              <div className={cn("w-12 h-12 rounded-full flex items-center justify-center", theme.accentBg)}>
+                <Image className={cn("w-6 h-6", theme.accentText)} />
               </div>
               <h2 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                 Project Gallery
@@ -442,6 +460,7 @@ export default function ProjectDetail() {
               variant="outline" 
               size="sm" 
               onClick={() => setShowVideoInput(true)}
+              className={cn(theme.cardBg, theme.cardBorder)}
               data-testid="button-add-video"
             >
               <Play className="w-4 h-4 mr-2" />
@@ -451,7 +470,7 @@ export default function ProjectDetail() {
 
           {/* Video URL Input */}
           {showVideoInput && (
-            <Card className="p-4 mb-6">
+            <Card className={cn("p-4 mb-6", theme.cardBg, theme.cardBorder)}>
               <div className="flex gap-3">
                 <Input
                   placeholder="Paste YouTube or Vimeo URL..."
@@ -473,7 +492,7 @@ export default function ProjectDetail() {
           <div 
             className={cn(
               "min-h-[200px] rounded-xl border-2 border-dashed transition-all duration-300 p-6",
-              galleryDragging ? "border-primary bg-primary/5" : "border-border",
+              galleryDragging ? cn(theme.accentBg, theme.accentText.replace("text-", "border-")) : theme.borderColor,
               mediaGallery.length === 0 && "flex items-center justify-center"
             )}
             onDrop={handleGalleryDrop}
@@ -482,7 +501,7 @@ export default function ProjectDetail() {
             data-testid="dropzone-gallery"
           >
             {mediaGallery.length === 0 ? (
-              <div className="text-center text-muted-foreground">
+              <div className={cn("text-center", theme.mutedText)}>
                 <Plus className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p className="text-lg font-medium mb-2">Drag & drop images or video URLs here</p>
                 <p className="text-sm">Supports images (PNG, JPG, GIF) and YouTube/Vimeo links</p>
@@ -490,7 +509,7 @@ export default function ProjectDetail() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mediaGallery.map((item) => (
-                  <div key={item.id} className="relative group rounded-lg overflow-hidden bg-card border border-border">
+                  <div key={item.id} className={cn("relative group rounded-lg overflow-hidden", theme.cardBg, theme.cardBorder, "border")}>
                     {item.type === 'image' ? (
                       <img 
                         src={item.url} 
@@ -515,8 +534,8 @@ export default function ProjectDetail() {
                             allowFullScreen
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full bg-muted">
-                            <Play className="w-8 h-8 text-muted-foreground" />
+                          <div className={cn("flex items-center justify-center h-full", theme.sectionBg)}>
+                            <Play className={cn("w-8 h-8", theme.mutedText)} />
                           </div>
                         )}
                       </div>
@@ -534,7 +553,7 @@ export default function ProjectDetail() {
                 ))}
                 {/* Add more placeholder */}
                 <div 
-                  className="flex items-center justify-center h-48 rounded-lg border-2 border-dashed border-border text-muted-foreground"
+                  className={cn("flex items-center justify-center h-48 rounded-lg border-2 border-dashed", theme.borderColor, theme.mutedText)}
                 >
                   <div className="text-center">
                     <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -553,14 +572,14 @@ export default function ProjectDetail() {
             {project.detailedDescription && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
-                    <Code2 className="w-5 h-5 text-accent" />
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                    <Code2 className={cn("w-5 h-5", theme.accentText)} />
                   </div>
                   <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                     About This Project
                   </h2>
                 </div>
-                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-detailed-description">
+                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-detailed-description">
                   {project.detailedDescription}
                 </p>
               </section>
@@ -569,14 +588,14 @@ export default function ProjectDetail() {
             {project.challenges && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                    <AlertTriangle className={cn("w-5 h-5", theme.accentText)} />
                   </div>
                   <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                     Challenges Faced
                   </h2>
                 </div>
-                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-challenges">
+                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-challenges">
                   {project.challenges}
                 </p>
               </section>
@@ -585,14 +604,14 @@ export default function ProjectDetail() {
             {project.outcome && (
               <section>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-emerald-500" />
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                    <TrendingUp className={cn("w-5 h-5", theme.accentText)} />
                   </div>
                   <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                     Results & Impact
                   </h2>
                 </div>
-                <p className="text-lg text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-outcome">
+                <p className={cn("text-lg leading-relaxed whitespace-pre-wrap", theme.mutedText)} data-testid="text-outcome">
                   {project.outcome}
                 </p>
               </section>
@@ -604,8 +623,8 @@ export default function ProjectDetail() {
             {project.highlights && project.highlights.length > 0 && (
               <section className="sticky top-24">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  <div className={cn("w-10 h-10 rounded-full flex items-center justify-center", theme.accentBg)}>
+                    <CheckCircle2 className={cn("w-5 h-5", theme.accentText)} />
                   </div>
                   <h2 className="text-2xl font-bold" style={{ fontFamily: 'var(--font-display)' }}>
                     Key Highlights
@@ -613,11 +632,11 @@ export default function ProjectDetail() {
                 </div>
                 <ul className="space-y-4">
                   {project.highlights.map((highlight, index) => (
-                    <li key={index} className="flex items-start gap-4 p-4 rounded-xl bg-card border border-border/50">
-                      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                    <li key={index} className={cn("flex items-start gap-4 p-4 rounded-xl border", theme.cardBg, theme.cardBorder)}>
+                      <span className={cn("flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold", theme.accentBg, theme.accentText)}>
                         {index + 1}
                       </span>
-                      <span className="text-foreground leading-relaxed">{highlight}</span>
+                      <span className="leading-relaxed">{highlight}</span>
                     </li>
                   ))}
                 </ul>
@@ -631,29 +650,29 @@ export default function ProjectDetail() {
               <div className="space-y-3">
                 {project.githubUrl && (
                   <a href={project.githubUrl} target="_blank" rel="noreferrer" className="block">
-                    <Card className="p-4 transition-shadow group">
+                    <Card className={cn("p-4 transition-shadow group", theme.cardBg, theme.cardBorder)}>
                       <div className="flex items-center gap-3">
-                        <Github className="w-5 h-5 text-muted-foreground" />
+                        <Github className={cn("w-5 h-5", theme.mutedText)} />
                         <span className="font-medium">View Source Code</span>
-                        <ExternalLink className="w-4 h-4 ml-auto text-muted-foreground" />
+                        <ExternalLink className={cn("w-4 h-4 ml-auto", theme.mutedText)} />
                       </div>
                     </Card>
                   </a>
                 )}
                 {project.demoUrl && (
                   <a href={project.demoUrl} target="_blank" rel="noreferrer" className="block">
-                    <Card className="p-4 transition-shadow group">
+                    <Card className={cn("p-4 transition-shadow group", theme.cardBg, theme.cardBorder)}>
                       <div className="flex items-center gap-3">
-                        <Globe className="w-5 h-5 text-muted-foreground" />
+                        <Globe className={cn("w-5 h-5", theme.mutedText)} />
                         <span className="font-medium">Try Live Demo</span>
-                        <ExternalLink className="w-4 h-4 ml-auto text-muted-foreground" />
+                        <ExternalLink className={cn("w-4 h-4 ml-auto", theme.mutedText)} />
                       </div>
                     </Card>
                   </a>
                 )}
                 {project.linkUrl && (
                   <a href={project.linkUrl} target="_blank" rel="noreferrer" className="block">
-                    <Card className="p-4 bg-primary text-primary-foreground group">
+                    <Card className={cn("p-4 group text-white", `bg-gradient-to-r ${theme.accent}`)}>
                       <div className="flex items-center gap-3">
                         <ExternalLink className="w-5 h-5" />
                         <span className="font-medium">Visit Project</span>
@@ -669,9 +688,9 @@ export default function ProjectDetail() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-12 text-center">
-        <p className="text-muted-foreground">
-          Part of <span className="font-semibold text-foreground">{portfolio?.name}</span>'s Portfolio
+      <footer className={cn("py-12 text-center border-t", theme.borderColor)}>
+        <p className={theme.mutedText}>
+          Part of <span className="font-semibold">{portfolio?.name}</span>'s Portfolio
         </p>
       </footer>
     </div>

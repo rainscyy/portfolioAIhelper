@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { themeConfigs } from "@/components/portfolio/LivePreview";
 import { 
   ArrowLeft, 
@@ -54,6 +54,10 @@ export default function ProjectDetail() {
   const [galleryDragging, setGalleryDragging] = useState(false);
   const [showVideoInput, setShowVideoInput] = useState(false);
   const [videoInputUrl, setVideoInputUrl] = useState("");
+  const [coverFocused, setCoverFocused] = useState(false);
+  const [galleryFocused, setGalleryFocused] = useState(false);
+  const coverZoneRef = useRef<HTMLDivElement>(null);
+  const galleryZoneRef = useRef<HTMLDivElement>(null);
 
   const { data: portfolio, isLoading: portfolioLoading } = useQuery<Portfolio & { projects: Project[] }>({
     queryKey: ['/api/portfolios', portfolioId],
@@ -186,6 +190,66 @@ export default function ProjectDetail() {
     setGalleryDragging(false);
   }, []);
 
+  const handlePaste = useCallback(async (e: ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    const imageItems = Array.from(items).filter(item => item.type.startsWith('image/'));
+    if (imageItems.length === 0) return;
+
+    e.preventDefault();
+
+    for (const item of imageItems) {
+      const file = item.getAsFile();
+      if (!file) continue;
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Please paste an image smaller than 5MB.", variant: "destructive" });
+        continue;
+      }
+
+      setUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        const response = await fetch("/api/upload", { method: "POST", body: formData });
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (coverFocused) {
+            await updateProjectMutation.mutateAsync({ imageUrl: data.url });
+            toast({ title: "Cover updated", description: "Cover image has been updated." });
+          } else if (galleryFocused) {
+            const currentGallery: MediaItem[] = project?.mediaGallery || [];
+            await updateProjectMutation.mutateAsync({ 
+              mediaGallery: [...currentGallery, { id: generateId(), type: 'image', url: data.url }] 
+            });
+            toast({ title: "Image added", description: "Image has been added to gallery." });
+          } else {
+            const currentGallery: MediaItem[] = project?.mediaGallery || [];
+            await updateProjectMutation.mutateAsync({ 
+              mediaGallery: [...currentGallery, { id: generateId(), type: 'image', url: data.url }] 
+            });
+            toast({ title: "Image added", description: "Image has been added to gallery." });
+          }
+        } else {
+          toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+        }
+      } catch (error) {
+        toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+      } finally {
+        setUploading(false);
+      }
+    }
+  }, [toast, updateProjectMutation, coverFocused, galleryFocused, project?.mediaGallery]);
+
+  useEffect(() => {
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, [handlePaste]);
+
   const addVideoUrl = async () => {
     if (!videoInputUrl.trim()) return;
     
@@ -302,13 +366,19 @@ export default function ProjectDetail() {
 
       {/* Hero Section with Drag & Drop */}
       <section 
+        ref={coverZoneRef}
+        tabIndex={0}
         className={cn(
-          "relative min-h-[70vh] flex items-end transition-all duration-300",
-          isDragging && cn("ring-4 ring-inset", theme.accentText.replace("text-", "ring-"))
+          "relative min-h-[70vh] flex items-end transition-all duration-300 outline-none cursor-pointer",
+          isDragging && cn("ring-4 ring-inset", theme.accentText.replace("text-", "ring-")),
+          coverFocused && cn("ring-2 ring-inset", theme.accentText.replace("text-", "ring-"))
         )}
         onDrop={handleCoverDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onFocus={() => { setCoverFocused(true); setGalleryFocused(false); }}
+        onBlur={() => setCoverFocused(false)}
+        onClick={() => coverZoneRef.current?.focus()}
         data-testid="dropzone-cover"
       >
         {project.imageUrl ? (
@@ -325,7 +395,8 @@ export default function ProjectDetail() {
           <div className={cn("absolute inset-0 flex items-center justify-center", theme.sectionBg)}>
             <div className={cn("text-center", theme.mutedText)}>
               <Image className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">Drag & drop a cover image here</p>
+              <p className="text-lg font-medium">Drag & drop or paste a cover image here</p>
+              <p className="text-sm opacity-70 mt-1">Click to focus, then Ctrl+V / Cmd+V to paste</p>
             </div>
           </div>
         )}
@@ -490,21 +561,28 @@ export default function ProjectDetail() {
           )}
 
           <div 
+            ref={galleryZoneRef}
+            tabIndex={0}
             className={cn(
-              "min-h-[200px] rounded-xl border-2 border-dashed transition-all duration-300 p-6",
+              "min-h-[200px] rounded-xl border-2 border-dashed transition-all duration-300 p-6 outline-none cursor-pointer",
               galleryDragging ? cn(theme.accentBg, theme.accentText.replace("text-", "border-")) : theme.borderColor,
+              galleryFocused && cn("ring-2", theme.accentText.replace("text-", "ring-")),
               mediaGallery.length === 0 && "flex items-center justify-center"
             )}
             onDrop={handleGalleryDrop}
             onDragOver={handleGalleryDragOver}
             onDragLeave={handleGalleryDragLeave}
+            onFocus={() => { setGalleryFocused(true); setCoverFocused(false); }}
+            onBlur={() => setGalleryFocused(false)}
+            onClick={() => galleryZoneRef.current?.focus()}
             data-testid="dropzone-gallery"
           >
             {mediaGallery.length === 0 ? (
               <div className={cn("text-center", theme.mutedText)}>
                 <Plus className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">Drag & drop images or video URLs here</p>
+                <p className="text-lg font-medium mb-2">Drag & drop or paste images here</p>
                 <p className="text-sm">Supports images (PNG, JPG, GIF) and YouTube/Vimeo links</p>
+                <p className="text-sm opacity-70 mt-1">Click to focus, then Ctrl+V / Cmd+V to paste</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -557,7 +635,7 @@ export default function ProjectDetail() {
                 >
                   <div className="text-center">
                     <Plus className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Drop more media</p>
+                    <p className="text-sm">Drop or paste more</p>
                   </div>
                 </div>
               </div>

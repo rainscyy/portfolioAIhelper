@@ -1,6 +1,8 @@
 import { type Portfolio, type Project, type ProjectCategory } from "@shared/schema";
-import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles, GalleryHorizontal, BookOpen, Mic, Building2, MapPin, Building, Bookmark } from "lucide-react";
+import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles, GalleryHorizontal, BookOpen, Mic, Building2, MapPin, Building, Bookmark, Upload, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState, useCallback } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // Category configuration for display
 const categoryConfig: Record<ProjectCategory, { icon: typeof Code2; label: string; plural: string }> = {
@@ -361,9 +363,14 @@ interface LivePreviewProps {
   portfolio: Portfolio;
   projects: Project[];
   onProjectClick?: (projectId: number) => void;
+  onUpdatePortfolio?: (updates: Partial<Portfolio>) => void;
 }
 
-export function LivePreview({ portfolio, projects, onProjectClick }: LivePreviewProps) {
+export function LivePreview({ portfolio, projects, onProjectClick, onUpdatePortfolio }: LivePreviewProps) {
+  const { toast } = useToast();
+  const [isDraggingProfile, setIsDraggingProfile] = useState(false);
+  const [uploadingProfile, setUploadingProfile] = useState(false);
+  
   const theme = themeConfigs[portfolio.colorTheme || "light"] || themeConfigs.light;
 
   const fontClass = portfolio.fontStyle === "serif" ? "font-serif" : 
@@ -383,6 +390,78 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
     : customPrimary 
     ? { background: `linear-gradient(135deg, ${customPrimary}, ${customPrimary}cc)` }
     : {};
+
+  const handleProfileDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingProfile(false);
+    
+    if (!onUpdatePortfolio) return;
+    
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file type", description: "Please drop an image file.", variant: "destructive" });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please drop an image smaller than 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploadingProfile(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      
+      if (response.ok) {
+        const data = await response.json();
+        onUpdatePortfolio({ profileImageUrl: data.url });
+        toast({ title: "Profile image updated", description: "Your profile photo has been updated." });
+      } else {
+        toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+    } finally {
+      setUploadingProfile(false);
+    }
+  }, [toast, onUpdatePortfolio]);
+
+  const handleProfileFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!onUpdatePortfolio) return;
+    
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Please select an image smaller than 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setUploadingProfile(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      
+      if (response.ok) {
+        const data = await response.json();
+        onUpdatePortfolio({ profileImageUrl: data.url });
+        toast({ title: "Profile image updated", description: "Your profile photo has been updated." });
+      } else {
+        toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+      }
+    } catch (error) {
+      toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+    } finally {
+      setUploadingProfile(false);
+    }
+  }, [toast, onUpdatePortfolio]);
 
   return (
     <div 
@@ -417,34 +496,68 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
-          {/* Profile Image */}
-          {portfolio.profileImageUrl ? (
-            <div className="relative inline-block">
+          {/* Profile Image with Upload */}
+          <div 
+            className={cn(
+              "relative inline-block group cursor-pointer",
+              isDraggingProfile && "ring-4 ring-white/50 ring-offset-4 ring-offset-transparent rounded-full"
+            )}
+            onDrop={handleProfileDrop}
+            onDragOver={(e) => { e.preventDefault(); setIsDraggingProfile(true); }}
+            onDragLeave={() => setIsDraggingProfile(false)}
+            data-testid="dropzone-profile"
+          >
+            {portfolio.profileImageUrl ? (
+              <>
+                <div 
+                  className={cn(
+                    "absolute inset-0 rounded-full blur-md opacity-60",
+                    !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
+                  )} 
+                  style={getGradientStyle()}
+                />
+                <img 
+                  src={portfolio.profileImageUrl} 
+                  alt="Profile" 
+                  className="relative w-36 h-36 rounded-full object-cover ring-4 ring-white/20 shadow-2xl"
+                  data-testid="img-profile"
+                />
+              </>
+            ) : (
               <div 
                 className={cn(
-                  "absolute inset-0 rounded-full blur-md opacity-60",
+                  "w-36 h-36 rounded-full mx-auto flex items-center justify-center ring-4 ring-white/10",
                   !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
-                )} 
+                )}
                 style={getGradientStyle()}
-              />
-              <img 
-                src={portfolio.profileImageUrl} 
-                alt="Profile" 
-                className="relative w-36 h-36 rounded-full object-cover ring-4 ring-white/20 shadow-2xl"
-                data-testid="img-profile"
-              />
-            </div>
-          ) : (
-            <div 
-              className={cn(
-                "w-36 h-36 rounded-full mx-auto flex items-center justify-center ring-4 ring-white/10",
-                !hasCustomColors && `bg-gradient-to-br ${theme.accent}`
-              )}
-              style={getGradientStyle()}
-            >
-              <User className="w-16 h-16 text-white/80" />
-            </div>
-          )}
+              >
+                <User className="w-16 h-16 text-white/80" />
+              </div>
+            )}
+            
+            {/* Upload overlay */}
+            {onUpdatePortfolio && (
+              <label 
+                className={cn(
+                  "absolute inset-0 rounded-full flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer",
+                  isDraggingProfile && "opacity-100"
+                )}
+              >
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleProfileFileSelect}
+                  data-testid="input-profile-upload"
+                />
+                {uploadingProfile ? (
+                  <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera className="w-8 h-8 text-white" />
+                )}
+              </label>
+            )}
+          </div>
           
           {/* Name & Tagline */}
           <div className="space-y-4">

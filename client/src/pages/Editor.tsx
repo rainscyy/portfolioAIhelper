@@ -261,6 +261,7 @@ export default function Editor() {
                   portfolio={portfolio} 
                   projects={portfolio.projects || []} 
                   onProjectClick={handleProjectClick}
+                  onUpdatePortfolio={(updates) => updatePortfolio.mutate({ id, ...updates })}
                 />
               </ScrollArea>
            </div>

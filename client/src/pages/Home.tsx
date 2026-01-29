@@ -207,7 +207,7 @@ export default function Home() {
             <div className="absolute -inset-1 bg-gradient-to-r from-primary to-accent opacity-30 blur-2xl rounded-[2rem] -z-10" />
             
             <Card className="glass-card rounded-[2rem] overflow-visible">
-              <CardContent className="p-8 space-y-8 bg-[#f9f1f2]">
+              <CardContent className="p-8 space-y-8 bg-[#f9f1f200]">
                 <div className="text-center space-y-2">
                   <h3 className="text-2xl font-bold font-display">Get Started</h3>
                   <p className="text-muted-foreground">Upload your resume to begin</p>

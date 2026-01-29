@@ -11,14 +11,14 @@ interface ColorPickerProps {
 }
 
 const presetColors = [
-  { name: "Blue", primary: "#0071e3", accent: "#0ea5e9" },
-  { name: "Pink", primary: "#ec4899", accent: "#f472b6" },
-  { name: "Orange", primary: "#f59e0b", accent: "#ea580c" },
-  { name: "Green", primary: "#10b981", accent: "#34d399" },
-  { name: "Purple", primary: "#8b5cf6", accent: "#a78bfa" },
-  { name: "Red", primary: "#ef4444", accent: "#f87171" },
-  { name: "Teal", primary: "#14b8a6", accent: "#2dd4bf" },
-  { name: "Indigo", primary: "#6366f1", accent: "#818cf8" },
+  { name: "Electric", primary: "#0066ff", accent: "#00aaff" },
+  { name: "Hot Pink", primary: "#ff0080", accent: "#ff4da6" },
+  { name: "Flame", primary: "#ff4400", accent: "#ff6b35" },
+  { name: "Emerald", primary: "#00c853", accent: "#00e676" },
+  { name: "Violet", primary: "#7c3aed", accent: "#a855f7" },
+  { name: "Crimson", primary: "#dc2626", accent: "#ef4444" },
+  { name: "Cyan", primary: "#00bcd4", accent: "#26c6da" },
+  { name: "Royal", primary: "#4f46e5", accent: "#6366f1" },
 ];
 
 export function ColorPicker({ primaryColor, accentColor, onPrimaryChange, onAccentChange }: ColorPickerProps) {
@@ -80,11 +80,11 @@ export function ColorPicker({ primaryColor, accentColor, onPrimaryChange, onAcce
           <div className="flex gap-2">
             <div 
               className="w-10 h-10 rounded-lg border border-border shadow-sm flex-shrink-0"
-              style={{ backgroundColor: primaryColor || '#0071e3' }}
+              style={{ backgroundColor: primaryColor || '#0066ff' }}
             />
             <Input
               type="color"
-              value={primaryColor || '#0071e3'}
+              value={primaryColor || '#0066ff'}
               onChange={(e) => onPrimaryChange(e.target.value)}
               className="h-10 w-full cursor-pointer"
               data-testid="input-primary-color"
@@ -97,11 +97,11 @@ export function ColorPicker({ primaryColor, accentColor, onPrimaryChange, onAcce
           <div className="flex gap-2">
             <div 
               className="w-10 h-10 rounded-lg border border-border shadow-sm flex-shrink-0"
-              style={{ backgroundColor: accentColor || '#0ea5e9' }}
+              style={{ backgroundColor: accentColor || '#00aaff' }}
             />
             <Input
               type="color"
-              value={accentColor || '#0ea5e9'}
+              value={accentColor || '#00aaff'}
               onChange={(e) => onAccentChange(e.target.value)}
               className="h-10 w-full cursor-pointer"
               data-testid="input-accent-color"

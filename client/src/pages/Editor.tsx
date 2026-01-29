@@ -94,20 +94,20 @@ export default function Editor() {
       
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar / Controls */}
-        <aside className="w-full md:w-[400px] glass-card border-r flex flex-col z-10">
-          <div className="p-4 border-b">
+        <aside className="w-full md:w-[400px] glass-card border-r flex flex-col z-10 overflow-hidden">
+          <div className="p-4 border-b flex-shrink-0">
             <h2 className="font-display font-bold text-xl">Portfolio Editor</h2>
           </div>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-            <div className="px-4 py-2">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            <div className="px-4 py-2 flex-shrink-0">
               <TabsList className="w-full grid grid-cols-2">
                 <TabsTrigger value="projects">Projects</TabsTrigger>
                 <TabsTrigger value="design">Design</TabsTrigger>
               </TabsList>
             </div>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 min-h-0 overflow-auto">
               <div className="p-4 pb-20">
                 <TabsContent value="projects" className="mt-0 space-y-4">
                   <div className="flex justify-between items-center mb-4">
@@ -192,7 +192,7 @@ export default function Editor() {
 
                 </TabsContent>
               </div>
-            </ScrollArea>
+            </div>
           </Tabs>
 
           <div className="p-4 border-t bg-background">

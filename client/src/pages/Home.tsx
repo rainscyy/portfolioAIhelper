@@ -44,24 +44,60 @@ export default function Home() {
       const portfolioId = demoPortfolio.id;
 
       await Promise.all([
+        // Projects
         apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
           title: "E-Commerce Platform",
           description: "A full-featured online marketplace with real-time inventory, secure payments, and AI-powered recommendations. Built with React, Node.js, and PostgreSQL.",
           technologies: ["React", "Node.js", "PostgreSQL", "Stripe", "Redis"],
           demoUrl: "https://demo.example.com",
           githubUrl: "https://github.com/alexchen/ecommerce",
+          category: "project",
         }),
         apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
           title: "AI Chat Assistant",
           description: "An intelligent conversational agent powered by GPT-4, featuring context-aware responses, multi-language support, and seamless integration with enterprise tools.",
           technologies: ["Python", "OpenAI", "FastAPI", "React", "WebSocket"],
           demoUrl: "https://chat.example.com",
+          category: "project",
         }),
+        // Exhibition
         apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
-          title: "Task Management App",
-          description: "A collaborative project management tool with Kanban boards, real-time updates, and team analytics. Designed for remote teams.",
-          technologies: ["TypeScript", "Next.js", "Prisma", "Tailwind CSS"],
-          githubUrl: "https://github.com/alexchen/taskflow",
+          title: "Digital Horizons",
+          description: "An interactive art installation exploring the intersection of technology and human creativity. Featured generative algorithms creating real-time visual experiences.",
+          category: "exhibition",
+          venue: "Modern Art Museum",
+          location: "San Francisco, CA",
+          year: "2024",
+          role: "Lead Artist",
+        }),
+        // Publication
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "Building Scalable AI Systems",
+          description: "A comprehensive guide to designing and implementing production-ready machine learning pipelines. Covers best practices for MLOps, model serving, and monitoring.",
+          category: "publication",
+          publisher: "O'Reilly Media",
+          year: "2024",
+          role: "Author",
+        }),
+        // Invited Talk
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "The Future of Web Development",
+          description: "Keynote presentation on emerging trends in web technologies, including AI integration, WebAssembly, and edge computing. Attended by 500+ developers.",
+          category: "talk",
+          venue: "TechConf 2024",
+          location: "Austin, TX",
+          year: "2024",
+          role: "Keynote Speaker",
+        }),
+        // Professional Experience
+        apiRequest('POST', `/api/portfolios/${portfolioId}/projects`, {
+          title: "Senior Software Engineer",
+          description: "Led a team of 5 engineers building customer-facing features. Improved system performance by 40% and mentored junior developers.",
+          category: "experience",
+          company: "Tech Startup Inc.",
+          location: "Remote",
+          year: "2022-Present",
+          role: "Team Lead",
         }),
       ]);
 

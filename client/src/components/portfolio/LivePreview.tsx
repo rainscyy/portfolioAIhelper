@@ -1,5 +1,5 @@
 import { type Portfolio, type Project, type ProjectCategory } from "@shared/schema";
-import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles, GalleryHorizontal, BookOpen, Mic, Building2 } from "lucide-react";
+import { Github, Linkedin, Globe, Mail, ExternalLink, Briefcase, Calendar, Code2, User, Sparkles, GalleryHorizontal, BookOpen, Mic, Building2, MapPin, Building, Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Category configuration for display
@@ -658,7 +658,7 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                       )}
                     </div>
 
-                    {/* 2. Information (Role, Year, Technologies) */}
+                    {/* 2. Information (Role, Year, Category-specific fields, Technologies) */}
                     <div className={cn(
                       "flex flex-wrap items-center gap-3 py-3 border-y",
                       theme.borderColor
@@ -683,6 +683,43 @@ export function LivePreview({ portfolio, projects, onProjectClick }: LivePreview
                         )}>
                           <Calendar className="w-3.5 h-3.5" />
                           {project.year}
+                        </span>
+                      )}
+                      {/* Category-specific fields */}
+                      {project.venue && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          theme.isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+                        )}>
+                          <Building className="w-3.5 h-3.5" />
+                          {project.venue}
+                        </span>
+                      )}
+                      {project.publisher && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          theme.isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+                        )}>
+                          <Bookmark className="w-3.5 h-3.5" />
+                          {project.publisher}
+                        </span>
+                      )}
+                      {project.company && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          theme.isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+                        )}>
+                          <Building2 className="w-3.5 h-3.5" />
+                          {project.company}
+                        </span>
+                      )}
+                      {project.location && (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-sm font-medium px-3 py-1 rounded-full",
+                          theme.isDark ? "bg-gray-800 text-gray-300" : "bg-gray-100 text-gray-600"
+                        )}>
+                          <MapPin className="w-3.5 h-3.5" />
+                          {project.location}
                         </span>
                       )}
                       {project.technologies && project.technologies.length > 0 && (
